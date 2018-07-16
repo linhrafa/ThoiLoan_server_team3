@@ -5,6 +5,7 @@ import bitzero.util.socialcontroller.bean.UserInfo;
 
 import cmd.obj.map.Army;
 import cmd.obj.map.Building;
+import cmd.obj.map.MapArray;
 import cmd.obj.map.Obs;
 
 import java.io.BufferedReader;
@@ -150,7 +151,23 @@ public class MapInfo extends DataModel{
         this.size_building++;
         this.listBuilding.add(building);        
     }
-
+    public MapArray getMapArray(){
+        MapArray mapArray = new MapArray();
+//        
+        for (Building building : this.listBuilding) {
+            mapArray.addBuilding(this,building.id,building.posX,building.posY);
+        }
+        
+//        System.out.println(">>>>>MAP ARRAY:");
+        for (int i=0;i<40;i++){
+            for(int j=0;j<40;j++){
+                System.out.print(mapArray.arr[i][j]+"-");   
+            }
+            System.out.println("----------------");  
+        }
+        
+        return mapArray;
+    }
     private boolean check(int id,List<Integer> list){
         if (list.size()==0) return true;
         for(int i:list){

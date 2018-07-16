@@ -9,6 +9,8 @@ import bitzero.server.extensions.data.DataCmd;
 
 import cmd.CmdDefine;
 
+import cmd.obj.map.MapArray;
+
 import cmd.receive.map.RequestMapInfo;
 
 //import cmd.send.demo.ResponseMove;
@@ -68,9 +70,18 @@ public class MapInfoHandler extends BaseClientRequestHandler {
                 if (mapInfo == null) {
                     System.out.println("mapInfo_null @#%&*^$&*&$@^$#$&^@#$&@$%@#%^@#^");
                     mapInfo = new MapInfo();
+                    
+                    
+                    
                     mapInfo.saveModel(user.getId());
                 }
-                send(new ResponseRequestMapInfo(mapInfo), user);
+            System.out.println(">>>>>MAP ARRAY:");
+            MapArray mapArray = new MapArray();
+            System.out.println(">>>>>MAP ARRAY1:");
+            mapArray = mapInfo.getMapArray();
+            System.out.println(">>>>>MAP ARRAY2:");
+            
+            send(new ResponseRequestMapInfo(mapInfo), user);
             
         } catch (Exception e) {
         }
