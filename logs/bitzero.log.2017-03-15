@@ -1,0 +1,75 @@
+15 Mar 2017 09:29:25,137 INFO  [main] bitzero.server.BitZeroServer     - Boot sequence starts...
+15 Mar 2017 09:29:25,153 INFO  [main] bitzero.server.BitZeroServer     - 
+ _____ _____ _____    ___ __ __    _____ _____ _____ _____ 
+|     |     |     |  |   |  |  |  | __  |     |     |_   _|
+| Bit  Zero | @   |  |  gsn |  |  | __ -|  |  |    | |  
+|_____|_____|_____|  |___|__|__|  |_____|_____|_____| |_|
+
+15 Mar 2017 09:29:25,294 INFO  [main] entities.managers.BZBannedUserStorage     - BanUserStorage initialized
+15 Mar 2017 09:29:25,309 WARN  [main] entities.managers.BZBannedUserManager     - Failure loading the BannedUser DB: java.io.InvalidClassException: bitzero.server.entities.managers.BanUserData; local class incompatible: stream classdesc serialVersionUID = -5727904595766376640, local class serialVersionUID = -5615498807880409532
+15 Mar 2017 09:29:25,309 INFO  [main] Extensions     - {Fresher}:   Register Handler  
+15 Mar 2017 09:29:25,325 INFO  [main] Extensions     - {Fresher}: service.AuthenticationHandler initilazion 
+15 Mar 2017 09:29:25,325 INFO  [main] Extensions     - {Fresher}:  Event Handler  
+15 Mar 2017 09:29:25,398 INFO  [main] bitzero.server.BitZeroServer     - Listening Sockets: 
+15 Mar 2017 09:29:25,398 INFO  [main] bitzero.server.BitZeroServer     -  
+ _____ _____ _____    ___ __ __    
+|     |     |     |  |   |  |  | 
+| Bit  Zero | @   |  |   gsn   |   
+|_____|_____|_____|  |___|__|__|                                       
+ _____ _____ _____ ____  __ __ 
+| __  |   __|  _  |    \|  |  |
+|    -|   __|     |  |  |_   _|
+|__|__|_____|__|__|____/  |_|  
+[ alpha RC ] 
+
+15 Mar 2017 09:29:25,400 INFO  [main] bitzero.server.BitZeroServer     - BitZeroServer Max (alpha RC-READY!
+15 Mar 2017 10:29:51,212 INFO  [main] bitzero.server.BitZeroServer     - Boot sequence starts...
+15 Mar 2017 10:29:51,212 INFO  [main] bitzero.server.BitZeroServer     - 
+ _____ _____ _____    ___ __ __    _____ _____ _____ _____ 
+|     |     |     |  |   |  |  |  | __  |     |     |_   _|
+| Bit  Zero | @   |  |  gsn |  |  | __ -|  |  |    | |  
+|_____|_____|_____|  |___|__|__|  |_____|_____|_____| |_|
+
+15 Mar 2017 10:29:51,353 INFO  [main] entities.managers.BZBannedUserStorage     - BanUserStorage initialized
+15 Mar 2017 10:29:51,368 INFO  [main] entities.managers.BZBannedUserManager     - BanUser data loaded: 0 records.
+15 Mar 2017 10:29:51,368 INFO  [main] Extensions     - {Fresher}:   Register Handler  
+15 Mar 2017 10:29:51,384 INFO  [main] Extensions     - {Fresher}: service.AuthenticationHandler initilazion 
+15 Mar 2017 10:29:51,384 INFO  [main] Extensions     - {Fresher}:  Event Handler  
+15 Mar 2017 10:29:51,464 INFO  [main] bitzero.server.BitZeroServer     - Listening Sockets: 
+15 Mar 2017 10:29:51,464 INFO  [main] bitzero.server.BitZeroServer     -  
+ _____ _____ _____    ___ __ __    
+|     |     |     |  |   |  |  | 
+| Bit  Zero | @   |  |   gsn   |   
+|_____|_____|_____|  |___|__|__|                                       
+ _____ _____ _____ ____  __ __ 
+| __  |   __|  _  |    \|  |  |
+|    -|   __|     |  |  |_   _|
+|__|__|_____|__|__|____/  |_|  
+[ alpha RC ] 
+
+15 Mar 2017 10:29:51,466 INFO  [main] bitzero.server.BitZeroServer     - BitZeroServer Max (alpha RC-READY!
+15 Mar 2017 10:31:17,442 INFO  [main] bitzero.server.BitZeroServer     - Boot sequence starts...
+15 Mar 2017 10:31:17,442 INFO  [main] bitzero.server.BitZeroServer     - 
+ _____ _____ _____    ___ __ __    _____ _____ _____ _____ 
+|     |     |     |  |   |  |  |  | __  |     |     |_   _|
+| Bit  Zero | @   |  |  gsn |  |  | __ -|  |  |    | |  
+|_____|_____|_____|  |___|__|__|  |_____|_____|_____| |_|
+
+15 Mar 2017 10:31:17,583 INFO  [main] entities.managers.BZBannedUserStorage     - BanUserStorage initialized
+15 Mar 2017 10:31:17,599 INFO  [main] entities.managers.BZBannedUserManager     - BanUser data loaded: 0 records.
+15 Mar 2017 10:31:17,599 INFO  [main] Extensions     - {Fresher}:   Register Handler  
+15 Mar 2017 10:31:17,614 INFO  [main] Extensions     - {Fresher}: service.AuthenticationHandler initilazion 
+15 Mar 2017 10:31:17,614 INFO  [main] Extensions     - {Fresher}:  Event Handler  
+15 Mar 2017 10:31:17,803 INFO  [main] bitzero.server.BitZeroServer     - Listening Sockets: { 10.198.48.46:1101, TCP, 1024 } { 10.198.48.46:1102, TCP, 1024 } { 127.0.0.1:8081 (WebSocket) }
+15 Mar 2017 10:31:17,803 INFO  [main] bitzero.server.BitZeroServer     -  
+ _____ _____ _____    ___ __ __    
+|     |     |     |  |   |  |  | 
+| Bit  Zero | @   |  |   gsn   |   
+|_____|_____|_____|  |___|__|__|                                       
+ _____ _____ _____ ____  __ __ 
+| __  |   __|  _  |    \|  |  |
+|    -|   __|     |  |  |_   _|
+|__|__|_____|__|__|____/  |_|  
+[ alpha RC ] 
+
+15 Mar 2017 10:31:17,805 INFO  [main] bitzero.server.BitZeroServer     - BitZeroServer Max (alpha RC-READY!
