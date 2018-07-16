@@ -63,7 +63,7 @@ public class ZPUserInfo extends DataModel {
     }
     
     private void InitJsonData() {
-        String path = "E:/workspace/Fresher_demo/conf/";
+        String path = System.getProperty("user.dir")+"/conf/";
         StringBuffer contents = new StringBuffer();
         
         try {

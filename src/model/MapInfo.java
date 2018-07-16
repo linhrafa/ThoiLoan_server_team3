@@ -53,7 +53,9 @@ public class MapInfo extends DataModel{
     private void InitJsonData() {
         int number_obs =5;
         List<Integer> list_obs = new ArrayList<Integer>();
-        String path = "E:/workspace/Fresher_demo/conf/";
+        String path = System.getProperty("user.dir")+"/conf/";
+//        System.out.println("Working Directory = " + );
+          
         StringBuffer contents = new StringBuffer();
         
         try {

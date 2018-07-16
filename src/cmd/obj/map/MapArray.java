@@ -16,7 +16,7 @@ public class MapArray {
     }
     public boolean addBuilding(MapInfo mapinfo, int id, int x, int y){
         
-        System.out.println("id, x, y = "+mapinfo.listBuilding.get(id).type+ " "+mapinfo.listBuilding.get(id).id);
+        //System.out.println("id, x, y = "+mapinfo.listBuilding.get(id).type+ " "+mapinfo.listBuilding.get(id).id);
         if (!checkId(id)){
             return false;            
         }
@@ -48,6 +48,7 @@ public class MapArray {
         return false;
     }
     private int getHeight(String type){
+        System.out.println("type = " + type );
         return -1;
     }
     private int getWeight(String type){
