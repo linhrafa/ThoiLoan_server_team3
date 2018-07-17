@@ -23,6 +23,8 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import util.server.ServerConstant;
+
 public class UserHandler extends BaseClientRequestHandler {
     public static short USER_MULTI_IDS = 1000;
     private final Logger logger = LoggerFactory.getLogger("UserHandler");
@@ -72,6 +74,10 @@ public class UserHandler extends BaseClientRequestHandler {
                 userInfo = new ZPUserInfo(user.getId(), user.getName());
                 userInfo.saveModel(user.getId());
             }
+            
+            System.out.println(">>>>>USER CONFIG:");
+            ServerConstant.readConfig();
+            System.out.println(">>>>>USER CONFIG1:");
             send(new ResponseRequestUserInfo(userInfo), user);
         } catch (Exception e) {
 

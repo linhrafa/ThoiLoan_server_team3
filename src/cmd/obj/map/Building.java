@@ -31,4 +31,9 @@ public class Building {
     public int getId(){
         return this.id;
     }
+
+    void setPos(int x,int y) {
+        this.posX = x;
+        this.posY = y;
+    }
 }

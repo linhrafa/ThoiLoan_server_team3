@@ -94,8 +94,7 @@ public class ZPUserInfo extends DataModel {
             this.darkElixir = player.getInt("darkElixir");
             System.out.println(this.darkElixir); 
             this.builderNumber = player.getInt("builderNumber"); 
-            System.out.println(this.builderNumber); 
-            
+            System.out.println(this.builderNumber);             
             
             
             

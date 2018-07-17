@@ -17,6 +17,7 @@ public class CmdDefine {
    
     //Log cmd
     public static final short GET_MAP_INFO = 2001;
+    public static final short MOVE_CONSTRUCTION = 2002;
 
     public static final short GET_FRIENDS = 3001;
     public static final short FRIEND_SEND_MESSAGE = 3002;

@@ -109,9 +109,9 @@ public class MapInfo extends DataModel{
             for(int i:list_obs){
                 
                 String num = Integer.toString(i);
-                System.out.println("num =" +num);
+                //System.out.println("num =" +num);
                 JSONObject obs_type = (JSONObject) obs.get(num);
-                System.out.println("obs_type =" +obs_type);
+                //System.out.println("obs_type =" +obs_type);
                 Obs _obs = new Obs(this.size_obs,obs_type.getString("type"),obs_type.getInt("posX"), obs_type.getInt("posY"));
                 this.listObs.add(_obs);
                 this.size_obs++;
@@ -149,24 +149,27 @@ public class MapInfo extends DataModel{
            return "";                      
 }
     public void addBuilding(String type, int posX, int posY) throws Exception {
+        
         Building building = new Building(this.size_building,type,1,posX,posY,"free");                
         this.size_building++;
         this.listBuilding.add(building);        
     }
     public MapArray getMapArray(){
         MapArray mapArray = new MapArray();
-//        
+        //System.out.println(">>>>>listBuilding:"+ this.listBuilding.toString());
         for (Building building : this.listBuilding) {
+            System.out.println(">>>>>mamama:"+ building.type);
             mapArray.addBuilding(this,building.id,building.posX,building.posY);
+            System.out.println(building.id+" "+building.posX + " "+building.posY);
         }
         
 //        System.out.println(">>>>>MAP ARRAY:");
-        for (int i=0;i<40;i++){
-            for(int j=0;j<40;j++){
-                System.out.print(mapArray.arr[i][j]+"-");   
-            }
-            System.out.println("----------------");  
-        }
+//        for (int i=0;i<40;i++){
+//            for(int j=0;j<40;j++){
+//                System.out.print(mapArray.arr[i][j]+"-");   
+//            }
+//            System.out.println("----------------");  
+//        }
         
         return mapArray;
     }
