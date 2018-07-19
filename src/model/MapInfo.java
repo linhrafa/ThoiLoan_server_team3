@@ -4,7 +4,6 @@ import bitzero.util.common.business.CommonHandle;
 import bitzero.util.socialcontroller.bean.UserInfo;
 
 import cmd.obj.map.Army;
-import cmd.obj.map.Building;
 import cmd.obj.map.MapArray;
 import cmd.obj.map.Obs;
 
@@ -19,6 +18,7 @@ import java.io.Reader;
 import java.io.Writer;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -150,13 +150,15 @@ public class MapInfo extends DataModel{
 }
     public void addBuilding(String type, int posX, int posY) throws Exception {
         
-        Building building = new Building(this.size_building,type,1,posX,posY,"free");                
+        Building building = new Building(this.size_building,type,1,posX,posY,"pending");                
         this.size_building++;
         this.listBuilding.add(building);        
     }
     public MapArray getMapArray(){
         MapArray mapArray = new MapArray();
         //System.out.println(">>>>>listBuilding:"+ this.listBuilding.toString());
+        
+        
         for (Building building : this.listBuilding) {
             System.out.println(">>>>>mamama:"+ building.type);
             mapArray.addBuilding(this,building.id,building.posX,building.posY);
@@ -186,5 +188,49 @@ public class MapInfo extends DataModel{
         return true;
     }
 
-    
+
+    public int getBuilderNotFree() {
+        int kq = 0;
+        for (Building building : this.listBuilding){
+            System.out.println("check status - building"+building.type+" , status = "+building.status);
+            if (building.status.equals("pending")){
+                kq++;
+            }
+        }
+        System.out.println("check status - so building free la:"+kq);
+        return kq;
+    }
+
+    public int getGToReleaseBuilder() {
+        long kq = 999999999;
+        for (Building building : this.listBuilding){
+            if (building.status.equals("pending")){
+                kq = Math.min(kq,building.getTimeConLai());
+            }
+        }
+        if (kq ==999999999) {
+            return -1;
+        }
+        else {
+            return timeToG(kq);
+        }
+    }
+
+    private int timeToG(long kq) { //linhrafa chua viet gi
+        return 0;
+    }
+
+    public void releaseBuilding() {
+        long time = 999999999;
+        int kq =-1;
+        for (Building building : this.listBuilding){
+            if (building.status.equals("pending")){
+                if (time>building.getTimeConLai()){
+                    time = building.getTimeConLai();
+                    kq = building.id;
+                }
+            }
+        }
+        this.listBuilding.get(kq).setStatus("complete");
+    }
 }

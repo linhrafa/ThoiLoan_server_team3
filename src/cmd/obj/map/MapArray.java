@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 import java.util.List;
 
+import model.Building;
 import model.MapInfo;
 
 import org.json.JSONException;
@@ -11,7 +12,7 @@ import org.json.JSONObject;
 
 import util.server.ServerConstant;
 
-public class MapArray {    
+public class MapArray {    //vi tri id cua cac building trong Mapinfo_listbuilding
     public int[][] arr = new int[50][50];
 
     public MapArray() {
@@ -19,36 +20,65 @@ public class MapArray {
             Arrays.fill(row, -1);
         }
             
-        System.out.println("Chay ngay di, truoc khi, Moi dieu dan toi te hon");
+        System.out.println("Da fillchar map array");
     }
-    public boolean addBuilding(MapInfo mapinfo, int id, int x, int y){
+    public boolean check_addBuilding(MapInfo mapinfo, int id, int x, int y){
         //System.out.println(id+" "+mapinfo.listBuilding.get(id).type+" "+x + " "+y);
-        //if (id ==0 ){return false;}
-        System.out.println("id, x, y = "+mapinfo.listBuilding.get(id).type+ " "+mapinfo.listBuilding.get(id).id);
-        if (!(hasId(id, mapinfo.listBuilding)) ) { //neu id chua ton tai
-            return false;
-        } else {
-        }
-        
         int height = getHeight((mapinfo.listBuilding.get(id)));
         int weight = getWeight((mapinfo.listBuilding.get(id)));
         
-        if (!checkPos(x,y,height,weight)){
+        System.out.println("id, x, y = "+mapinfo.listBuilding.get(id).type+ " "+mapinfo.listBuilding.get(id).id);
+        if ((hasId(id, mapinfo.listBuilding)) ) { //neu id chua ton tai
             return false;
         }
+        if (!checkPos(x,y,height,weight)){ //neu check position bi false
+            return false;
+        }
+        
+        return true;
+    }
+    
+    public boolean check_addBuilding(MapInfo mapinfo, String type, int x, int y){
+        System.out.println("LOG_ADDBUILDING: type+" + type + "x=+"+x+ "+y = "+y);
+        int height = getHeight(type);
+        int weight = getWeight(type);
+        
+        System.out.println("id, x, y = "+type+ " "+x+" "+y);
+        
+        if (!checkPos(x,y,height,weight)){ //neu check position bi false
+            return false;
+        }
+        
+        return true;
+    }
+    
+    public boolean addBuilding(MapInfo mapinfo, int id, int x, int y ){
+        //System.out.println(id+" "+mapinfo.listBuilding.get(id).type+" "+x + " "+y);
+        int height = getHeight((mapinfo.listBuilding.get(id)));
+        int weight = getWeight((mapinfo.listBuilding.get(id)));
+        
+        if (! check_addBuilding(mapinfo,id,x,y)){
+            return false;
+        }   
         
         
         System.out.println("*****addbuilding in map array**************************");
         
-        
-        for(int i=x;i<x+weight;i++){
-            for (int j = y;j<y+height;j++){
-                this.arr[i][j] = id;
+       // add bulding in map array
+            for(int i=x;i<x+weight;i++){
+                for (int j = y;j<y+height;j++){
+                    this.arr[i][j] = id;
+                }
             }
-        }
+        //khau tru tai nguyen resource
+        
         return true;
     }
-
+    public void print(){
+        for (int[] row: arr){
+            
+        }
+    }
    
 
     private boolean checkPos(int x, int y, int height, int weight) {
@@ -135,6 +165,25 @@ public class MapArray {
             if (building.getId()==id) return true;
         }
         return false;
+    }
+
+    private int getHeight(String type) {
+        
+        try {
+            return ServerConstant.config.getJSONObject(type).getJSONObject("1").getInt("height");
+        } catch (JSONException e) {
+            return -1;
+        }
+    }
+
+    private int getWeight(String type) {
+        
+
+        try {
+            return ServerConstant.config.getJSONObject(type).getJSONObject("1").getInt("height");
+        } catch (JSONException e) {
+            return -1;
+        }
     }
 }
 

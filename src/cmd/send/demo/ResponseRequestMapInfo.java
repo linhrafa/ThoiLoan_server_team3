@@ -9,7 +9,7 @@ import java.awt.Point;
 
 import java.nio.ByteBuffer;
 
-import cmd.obj.map.Building;
+import model.Building;
 import model.MapInfo;
 import cmd.obj.map.Obs;
 

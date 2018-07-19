@@ -84,7 +84,7 @@ public class ZPUserInfo extends DataModel {
                    
             JSONObject player = ServerConstant.configInitGame.getJSONObject("player");
             JSONObject obs = ServerConstant.configInitGame.getJSONObject("obs");
-            //System.out.println(tow1.getInt("posX"));    
+            System.out.println("NUGGGGGGGGGGGGGGG");    
             this.gold = player.getInt("gold");
             System.out.println(this.gold); 
             this.coin = player.getInt("coin");
@@ -106,6 +106,37 @@ public class ZPUserInfo extends DataModel {
         } catch (Exception e){
             CommonHandle.writeErrLog(e);
         }
+    }
+    
+    public void reduceUserResources(int gold, int elixir, int darkElixir, int coin, String type, boolean isAdd ){
+        //tru gold
+        if (this.gold < gold){
+            this.gold = 0;
+        }
+        else {
+            this.gold = this.gold - gold;
+        }
+        //tru elixir
+        if (this.elixir < elixir){
+            this.elixir = 0;
+        }
+        else {
+            this.elixir = this.elixir - elixir;
+        }
+        if (this.darkElixir < darkElixir){
+            this.darkElixir = 0;
+        }
+        else {
+            this.darkElixir = this.darkElixir - darkElixir;
+        }
+        
+        this.coin = this.coin - coin;
+        
+        
+        if (type.equals("BDH_1") && isAdd){
+            this.builderNumber = this.builderNumber + 1;
+        }
+        
     }
 
     

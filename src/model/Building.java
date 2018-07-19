@@ -1,14 +1,19 @@
-package cmd.obj.map;
+package model;
+
+import org.json.JSONException;
+
+import org.json.JSONObject;
 
 import util.database.DataHandler;
 
 import util.database.DataModel;
 
+import util.server.ServerConstant;
 import util.server.ServerUtil;
 
-public class Building {
+public class Building{
     public int id;
-    public String status = "free"; //free, building, upgrade
+    public String status = "complete"; //free, building, upgrade
     public int timebuild =0;
     public String type;
     public int level;
@@ -32,8 +37,20 @@ public class Building {
         return this.id;
     }
 
-    void setPos(int x,int y) {
+    public void setPos(int x, int y) {
         this.posX = x;
         this.posY = y;
     }
+
+    long getTimeConLai() {
+        
+        
+        return 0L;
+        
+    }
+
+    void setStatus(String string) {
+        this.status = string;
+    }
 }
+

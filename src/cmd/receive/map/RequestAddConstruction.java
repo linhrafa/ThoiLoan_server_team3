@@ -1,5 +1,6 @@
 package cmd.receive.map;
 
+import bitzero.server.entities.User;
 import bitzero.server.extensions.data.BaseCmd;
 import bitzero.server.extensions.data.DataCmd;
 
@@ -10,12 +11,12 @@ import java.nio.ByteBuffer;
 
 
 
-public class RequestMoveConstruction extends BaseCmd{
-    public int id;
+public class RequestAddConstruction extends BaseCmd{
+    public String type;
     public int posX;
-    public int posY;
+    public int posY;  
     
-    public RequestMoveConstruction(DataCmd dataCmd) {
+    public RequestAddConstruction(DataCmd dataCmd) {
         super(dataCmd);
         unpackData();
     }
@@ -24,11 +25,13 @@ public class RequestMoveConstruction extends BaseCmd{
     public void unpackData() {
         ByteBuffer bf = makeBuffer();
         try {
-            id = readInt(bf);
-            posX = readInt(bf);
-            posY = readInt(bf);
+            this.type = readString(bf);
+            System.out.println("LOG_ADDBUILDING: type+" + this.type );
+            this.posX = readInt(bf);
+            this.posY = readInt(bf);            
         }catch (Exception e) {
             CommonHandle.writeErrLog(e);}
     }
 }
+
 
