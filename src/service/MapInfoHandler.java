@@ -126,7 +126,7 @@ MapInfoHandler extends BaseClientRequestHandler {
 //            System.out.println(">>>>>MAP ARRAY:");
            
             mapInfo.checkStatus();
-            System.out.println("LALALALALALALALALALA");
+            
             send(new ResponseRequestMapInfo(mapInfo), user);
             
         } catch (Exception e) {
@@ -212,7 +212,7 @@ MapInfoHandler extends BaseClientRequestHandler {
             
             if (checkPosition && (check_resource+coin<userInfo.coin)){ //coin de bu vao su chuyen doi < coin hien tai cua nguoi dung
                 //add building to pending
-                mapInfo.addBuilding(add_construction.type, add_construction.posX, add_construction.posY, "pending");
+                mapInfo.addBuilding(add_construction.type, add_construction.posX, add_construction.posY,level, "pending");
                 mapArray = mapInfo.getMapArray();
                 //get resource cua nha
                 int gold = getGold(add_construction.type,level);
@@ -281,11 +281,14 @@ MapInfoHandler extends BaseClientRequestHandler {
             System.out.println("check_resource chuyen doi to upgrade building= " + check_resource );
             int coin = getCoin(building.type,building.level+1);
 
-            if ((check_resource+coin < userInfo.builderNumber)){
+            if (check_resource+coin<userInfo.coin){ //coin de bu vao su chuyen doi < coin hien tai cua nguoi dung
+                //add building to pending
+                
                 //get resource cua nha
-                int gold = getGold(building.type,building.level+1);
-                int elixir = getElixir(building.type,building.level+1);
-                int darkElixir = getDarkElixir(building.type,building.level+1);
+                int gold = getGold(building.type,building.level);
+                int elixir = getElixir(building.type,building.level);
+                int darkElixir = getDarkElixir(building.type,building.level);
+                
                 
                 
                 // kiem tra tho xay
@@ -294,27 +297,27 @@ MapInfoHandler extends BaseClientRequestHandler {
 
                     int g = mapInfo.getGToReleaseBuilder();
                     check_resource = check_resource +g;
-                    if (userInfo.coin < check_resource ){ //neu khong du tien mua tho xay
+                    if (userInfo.coin < coin ){ //neu khong du tien mua tho xay
                         //linhrafa --Neu false
                         //tra ve false
-                        send(new ResponseRequestAddConstruction(ServerConstant.ERROR), user);
+                        send(new ResponseRequestUpgradeConstruction(ServerConstant.ERROR), user);
                     }
                     else {
-                        //giai phong 1 ngoi nha pending
+                        //giai phong 1 ngoi nha pending //linhrafa them 
                         mapInfo.releaseBuilding(); 
-                        userInfo.reduceUserResources(gold,elixir,darkElixir,check_resource, building.type, false);
+                        userInfo.reduceUserResources(gold,elixir,darkElixir,check_resource+coin, building.type, false);
                         userInfo.saveModel(user.getId());
                         mapInfo.saveModel(user.getId());
                         
-                        send(new ResponseRequestAddConstruction(ServerConstant.SUCCESS), user);
+                        send(new ResponseRequestUpgradeConstruction(ServerConstant.SUCCESS), user);
                     }
-                } else { //neu da du tho xay
+                } else { //neu da du tho xay  //linhrafa
                     userInfo.reduceUserResources(gold,elixir,darkElixir,check_resource, building.type, false);
                     
                     userInfo.saveModel(user.getId());
                     mapInfo.saveModel(user.getId());
                     
-                    send(new ResponseRequestAddConstruction(ServerConstant.SUCCESS), user);
+                    send(new ResponseRequestUpgradeConstruction(ServerConstant.SUCCESS), user);
                 }
                 
             }
@@ -322,7 +325,7 @@ MapInfoHandler extends BaseClientRequestHandler {
                 //linhrafa --Neu false
                 //tra ve false
                 send(new ResponseRequestAddConstruction(ServerConstant.ERROR), user);
-            }      
+            }                
             
         } catch (Exception e) {
         }

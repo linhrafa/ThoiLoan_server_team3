@@ -28,9 +28,11 @@ public class ResponseRequestMapInfo extends BaseMsg {
         for (Building building : mapInfo.listBuilding) {
             bf.putInt(building.id);
             putStr(bf, building.type);
+            System.out.print("type = "+ building.type);
             bf.putInt(building.posX);
             bf.putInt(building.posY);
             bf.putInt(building.level);
+            System.out.print("level = "+ building.level);
             //bf.putInt(building.timebuild);
             putStr(bf, building.status);
             bf.putLong(building.timeStart);

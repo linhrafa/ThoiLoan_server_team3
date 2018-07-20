@@ -66,5 +66,9 @@ public class Building{
             return -1;
         }
     }
+
+    public String getStatus() {
+        return this.status;
+    }
 }
 

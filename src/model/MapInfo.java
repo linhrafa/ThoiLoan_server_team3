@@ -87,8 +87,12 @@ public class MapInfo extends DataModel{
 //                System.out.println("typehouse "+ key);    
 //                System.out.println("posX "+ house_type.getInt("posX")); 
 //                System.out.println("posy "+ house_type.getInt("posY")); 
-                
-                addBuilding(key,house_type.getInt("posX"), house_type.getInt("posY"),"complete");
+                if (key.equals("TOW_1")){
+                    addBuilding(key,house_type.getInt("posX"), house_type.getInt("posY"),6,"complete");
+                }else{
+                    addBuilding(key,house_type.getInt("posX"), house_type.getInt("posY"),1,"complete");
+                }
+                    
             }
             
             System.out.println("listbuilding "+ this.listBuilding.size()+ " and size = "+this.size_building); 
@@ -148,9 +152,9 @@ public class MapInfo extends DataModel{
 //    }
            return "";                      
 }
-    public void addBuilding(String type, int posX, int posY, String status) throws Exception {
+    public void addBuilding(String type, int posX, int posY, int level,String status) throws Exception {
         
-        Building building = new Building(this.size_building,type,1,posX,posY, status);                
+        Building building = new Building(this.size_building,type,level,posX,posY, status);                
         this.size_building++;
         this.listBuilding.add(building);
     }
@@ -225,11 +229,15 @@ public class MapInfo extends DataModel{
         int kq =-1;
         for (Building building : this.listBuilding){
                 if (building.status.equals("pending")|| building.status.equals("upgrade")){
+                    //linhrafa neu dang upgrade thi tang level
                 if (time>building.getTimeConLai()){
                     time = building.getTimeConLai();
                     kq = building.id;
                 }
             }
+        }
+        if (this.listBuilding.get(kq).getStatus().equals("upgrade")){
+            this.listBuilding.get(kq).level = this.listBuilding.get(kq).level +1;
         }
         this.listBuilding.get(kq).setStatus("complete");
     }

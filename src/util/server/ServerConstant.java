@@ -356,6 +356,8 @@ public class ServerConstant {
             ServerConstant.config.put("LAB_1", configLaboratory.getJSONObject("LAB_1"));
             ServerConstant.config.put("RES_1", configResource.getJSONObject("RES_1"));
             ServerConstant.config.put("STO_1", configStorage.getJSONObject("STO_1"));
+            ServerConstant.config.put("STO_2", configStorage.getJSONObject("STO_2"));
+            ServerConstant.config.put("STO_3", configStorage.getJSONObject("STO_3"));
             ServerConstant.config.put("TOW_1", configTownHall.getJSONObject("TOW_1"));
 //            //ServerConstant.config.put("TOW_1", configArmyCamp.getJSONObject("TOW_1"));
             System.out.println(">>>>>>>>>b = " + config.toString());
