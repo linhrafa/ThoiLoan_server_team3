@@ -31,8 +31,9 @@ public class ResponseRequestMapInfo extends BaseMsg {
             bf.putInt(building.posX);
             bf.putInt(building.posY);
             bf.putInt(building.level);
-            bf.putInt(building.timebuild);
-            putStr(bf, building.status);  
+            //bf.putInt(building.timebuild);
+            putStr(bf, building.status);
+            bf.putLong(building.timeStart);
             
             
         }

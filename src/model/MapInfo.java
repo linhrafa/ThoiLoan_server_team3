@@ -88,7 +88,7 @@ public class MapInfo extends DataModel{
 //                System.out.println("posX "+ house_type.getInt("posX")); 
 //                System.out.println("posy "+ house_type.getInt("posY")); 
                 
-                addBuilding(key,house_type.getInt("posX"), house_type.getInt("posY"));
+                addBuilding(key,house_type.getInt("posX"), house_type.getInt("posY"),"complete");
             }
             
             System.out.println("listbuilding "+ this.listBuilding.size()+ " and size = "+this.size_building); 
@@ -148,11 +148,11 @@ public class MapInfo extends DataModel{
 //    }
            return "";                      
 }
-    public void addBuilding(String type, int posX, int posY) throws Exception {
+    public void addBuilding(String type, int posX, int posY, String status) throws Exception {
         
-        Building building = new Building(this.size_building,type,1,posX,posY,"pending");                
+        Building building = new Building(this.size_building,type,1,posX,posY, status);                
         this.size_building++;
-        this.listBuilding.add(building);        
+        this.listBuilding.add(building);
     }
     public MapArray getMapArray(){
         MapArray mapArray = new MapArray();
@@ -160,9 +160,9 @@ public class MapInfo extends DataModel{
         
         
         for (Building building : this.listBuilding) {
-            System.out.println(">>>>>mamama:"+ building.type);
+            //System.out.println(">>>>>mamama:"+ building.type);
             mapArray.addBuilding(this,building.id,building.posX,building.posY);
-            System.out.println(building.id+" "+building.posX + " "+building.posY);
+            //System.out.println(building.id+" "+building.posX + " "+building.posY);
         }
         
 //        System.out.println(">>>>>MAP ARRAY:");
@@ -193,7 +193,7 @@ public class MapInfo extends DataModel{
         int kq = 0;
         for (Building building : this.listBuilding){
             System.out.println("check status - building"+building.type+" , status = "+building.status);
-            if (building.status.equals("pending")){
+            if (building.status.equals("pending")|| building.status.equals("upgrade")){
                 kq++;
             }
         }
@@ -204,7 +204,7 @@ public class MapInfo extends DataModel{
     public int getGToReleaseBuilder() {
         long kq = 999999999;
         for (Building building : this.listBuilding){
-            if (building.status.equals("pending")){
+            if (building.status.equals("pending")|| building.status.equals("upgrade")){
                 kq = Math.min(kq,building.getTimeConLai());
             }
         }
@@ -224,7 +224,7 @@ public class MapInfo extends DataModel{
         long time = 999999999;
         int kq =-1;
         for (Building building : this.listBuilding){
-            if (building.status.equals("pending")){
+                if (building.status.equals("pending")|| building.status.equals("upgrade")){
                 if (time>building.getTimeConLai()){
                     time = building.getTimeConLai();
                     kq = building.id;
@@ -232,5 +232,16 @@ public class MapInfo extends DataModel{
             }
         }
         this.listBuilding.get(kq).setStatus("complete");
+    }
+
+    public void checkStatus() {
+        for (Building building : this.listBuilding){
+                long time_cur = System.currentTimeMillis();
+                long distance = time_cur - building.timeStart;
+                long time_start = building.getTimeBuild();
+                if ((distance > time_start) && time_start!=-1){
+                    building.setStatus("complete");
+                }
+        }
     }
 }

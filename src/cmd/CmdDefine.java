@@ -19,6 +19,11 @@ public class CmdDefine {
     public static final short GET_MAP_INFO = 2001;
     public static final short MOVE_CONSTRUCTION = 2002;
     public static final short ADD_CONSTRUCTION = 2003;
+    public static final short UPGRADE_CONSTRUCTION = 2004;
+    
+    
+    public static final short GET_SERVER_TIME = 2100;
+    public static final short FINISH_TIME_CONSTRUCTION = 2101;
 
     public static final short GET_FRIENDS = 3001;
     public static final short FRIEND_SEND_MESSAGE = 3002;

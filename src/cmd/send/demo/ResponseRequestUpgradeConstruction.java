@@ -11,10 +11,10 @@ import java.nio.ByteBuffer;
 import model.MapInfo;
 
 
-public class ResponseRequestAddConstruction extends BaseMsg {
+public class ResponseRequestUpgradeConstruction extends BaseMsg {
     short validate ;
-    public ResponseRequestAddConstruction(short s) {
-        super(CmdDefine.ADD_CONSTRUCTION);
+    public ResponseRequestUpgradeConstruction(short s) {
+        super(CmdDefine.UPGRADE_CONSTRUCTION);
         this.validate = s;
     }
 
@@ -22,8 +22,8 @@ public class ResponseRequestAddConstruction extends BaseMsg {
     @Override
     public byte[] createData() {
         ByteBuffer bf = makeBuffer();
-        System.out.println("validate XAY= " + this.validate );
-        bf.putShort(this.validate);
+        
+        bf.putShort(validate);
         return packBuffer(bf);
     }
 }

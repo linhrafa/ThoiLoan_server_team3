@@ -1,3 +1,5 @@
+
+
 package cmd.send.demo;
 
 import bitzero.server.extensions.data.BaseMsg;
@@ -11,11 +13,11 @@ import java.nio.ByteBuffer;
 import model.MapInfo;
 
 
-public class ResponseRequestMoveConstruction extends BaseMsg {
-    short validate ;
-    public ResponseRequestMoveConstruction(short s) {
-        super(CmdDefine.MOVE_CONSTRUCTION);
-        this.validate = s;
+public class ResponseRequestServerTime extends BaseMsg {
+    long time;
+    public ResponseRequestServerTime(long _time) {
+        super(CmdDefine.GET_SERVER_TIME);
+        this.time = _time;
     }
 
 
@@ -23,8 +25,8 @@ public class ResponseRequestMoveConstruction extends BaseMsg {
     public byte[] createData() {
         ByteBuffer bf = makeBuffer();
         
-        bf.putShort(validate);
-        System.out.println("success or not "+ this.validate);
+        bf.putLong(this.time);
+        System.out.println("ResponseRequestServerTime "+ this.time);
         return packBuffer(bf);
     }
 }

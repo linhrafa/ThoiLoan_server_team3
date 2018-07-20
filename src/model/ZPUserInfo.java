@@ -112,26 +112,34 @@ public class ZPUserInfo extends DataModel {
         //tru gold
         if (this.gold < gold){
             this.gold = 0;
+            System.out.println("het gold");
         }
         else {
             this.gold = this.gold - gold;
+            System.out.println("gold bi tru di " + gold);
         }
         //tru elixir
         if (this.elixir < elixir){
             this.elixir = 0;
+            System.out.println("het elixir");
+            
         }
         else {
             this.elixir = this.elixir - elixir;
+            System.out.println("elixir bi tru di " + elixir);
         }
         if (this.darkElixir < darkElixir){
+            
             this.darkElixir = 0;
+            System.out.println("het darkElixir");
         }
         else {
             this.darkElixir = this.darkElixir - darkElixir;
+            System.out.println("darkElixir bi tru di " + darkElixir);
         }
         
         this.coin = this.coin - coin;
-        
+        System.out.println("coin bi tru di " + coin);
         
         if (type.equals("BDH_1") && isAdd){
             this.builderNumber = this.builderNumber + 1;

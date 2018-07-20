@@ -11,7 +11,10 @@ import cmd.CmdDefine;
 
 import cmd.obj.map.MapArray;
 
+import cmd.receive.map.RequestUpgradeConstruction;
 import cmd.receive.map.RequestAddConstruction;
+import cmd.receive.map.RequestFinishTimeConstruction;
+import cmd.receive.map.RequestGetServerTime;
 import cmd.receive.map.RequestMapInfo;
 
 //import cmd.send.demo.ResponseMove;
@@ -19,8 +22,11 @@ import cmd.receive.map.RequestMapInfo;
 import cmd.receive.map.RequestMoveConstruction;
 
 import cmd.send.demo.ResponseRequestAddConstruction;
+import cmd.send.demo.ResponseRequestFinishTimeConstruction;
 import cmd.send.demo.ResponseRequestMapInfo;
 import cmd.send.demo.ResponseRequestMoveConstruction;
+import cmd.send.demo.ResponseRequestServerTime;
+import cmd.send.demo.ResponseRequestUpgradeConstruction;
 import cmd.send.demo.ResponseRequestUserInfo;
 
 import java.awt.Point;
@@ -46,6 +52,8 @@ public class
 MapInfoHandler extends BaseClientRequestHandler {
     
     public static short MAPINFO_MULTI_IDS = 2000;
+    public static short add_house_id = 1;
+    public static short upgrade_house_id = 2;
     private final Logger logger = LoggerFactory.getLogger("MapInfoHandler");
     
     public MapInfoHandler() {
@@ -74,6 +82,21 @@ MapInfoHandler extends BaseClientRequestHandler {
                     RequestAddConstruction add_construction = new RequestAddConstruction(dataCmd);
                     processAddConstruction(user,add_construction);
                     break;
+                case CmdDefine.UPGRADE_CONSTRUCTION:
+                    System.out.println("Receive MAP UPGRADE");
+                    RequestUpgradeConstruction upgrade_construction = new RequestUpgradeConstruction(dataCmd);
+                    processUpgradeConstruction(user,upgrade_construction);
+                    break;
+                case CmdDefine.FINISH_TIME_CONSTRUCTION:
+                    System.out.println("FINISH_TIME_CONSTRUCTION");
+                    RequestFinishTimeConstruction finish_time = new RequestFinishTimeConstruction(dataCmd);
+                    processFinishTimeConstruction(user,finish_time);
+                    break;
+                case CmdDefine.GET_SERVER_TIME:
+                    System.out.println("GET_SERVER_TIME");
+                    RequestGetServerTime server_time = new RequestGetServerTime(dataCmd);
+                    processGetServerTime(user,server_time);
+                    break;
             }
         } catch (Exception e) {
             logger.warn("DEMO HANDLER EXCEPTION " + e.getMessage());
@@ -101,9 +124,8 @@ MapInfoHandler extends BaseClientRequestHandler {
                     mapInfo.saveModel(user.getId());
                 }
 //            System.out.println(">>>>>MAP ARRAY:");
-            MapArray mapArray = new MapArray();
-            mapArray = mapInfo.getMapArray();
-            
+           
+            mapInfo.checkStatus();
             System.out.println("LALALALALALALALALALA");
             send(new ResponseRequestMapInfo(mapInfo), user);
             
@@ -150,7 +172,7 @@ MapInfoHandler extends BaseClientRequestHandler {
 
     private void processAddConstruction(User user, RequestAddConstruction add_construction) {
         try {
-            System.out.println("LOG_ADDBUILDING: type+" + add_construction.type );
+            
             boolean validate_add_construction = true;
             System.out.println("processAddConstruction" + user.getId() );
             ZPUserInfo userInfo = (ZPUserInfo) ZPUserInfo.getModel(user.getId(), ZPUserInfo.class);
@@ -170,19 +192,33 @@ MapInfoHandler extends BaseClientRequestHandler {
             boolean checkPosition = mapArray.check_addBuilding(mapInfo, add_construction.type, add_construction.posX,add_construction.posY);
             System.out.println("checkPosition = " + checkPosition );
             
+            //CHECK_RESOURCE 
+            int level =1;
+            if (add_construction.type.equals("BDH_1")){
+                level = userInfo.builderNumber+1;
+                if (level>5){
+                    send(new ResponseRequestAddConstruction(ServerConstant.ERROR), user);
+                    return;
+                }
+            }
+            System.out.println("new level = " + level );
             int check_resource = 0;
-            check_resource = checkResource(userInfo,(add_construction.type));
-            System.out.println("check_resource = " + check_resource );
+            check_resource = checkResource(userInfo,(add_construction.type),level);
+            System.out.println("check_resource coin bu vao tai nguyen khac to add building= " + check_resource );
+            int coin = getCoin(add_construction.type,level); //coin de thuc hien thao tac voi nha
             
-            if (checkPosition && (check_resource==0)){
+            System.out.println("check_resource+coin= " + check_resource+coin );
+            System.out.println("userInfo.coin= " + userInfo.coin );
+            
+            if (checkPosition && (check_resource+coin<userInfo.coin)){ //coin de bu vao su chuyen doi < coin hien tai cua nguoi dung
                 //add building to pending
-                mapInfo.addBuilding(add_construction.type, add_construction.posX, add_construction.posY);
+                mapInfo.addBuilding(add_construction.type, add_construction.posX, add_construction.posY, "pending");
                 mapArray = mapInfo.getMapArray();
                 //get resource cua nha
-                int gold = getGold(add_construction.type);
-                int elixir = getElixir(add_construction.type);
-                int darkElixir = getDarkElixir(add_construction.type);
-                int coin = getCoin(add_construction.type);
+                int gold = getGold(add_construction.type,level);
+                int elixir = getElixir(add_construction.type,level);
+                int darkElixir = getDarkElixir(add_construction.type,level);
+                
                 
                 
                 // kiem tra tho xay
@@ -191,7 +227,7 @@ MapInfoHandler extends BaseClientRequestHandler {
 
                     int g = mapInfo.getGToReleaseBuilder();
                     check_resource = check_resource +g;
-                    if (userInfo.coin < check_resource ){ //neu khong du tien mua tho xay
+                    if (userInfo.coin < coin ){ //neu khong du tien mua tho xay
                         //linhrafa --Neu false
                         //tra ve false
                         send(new ResponseRequestAddConstruction(ServerConstant.ERROR), user);
@@ -199,7 +235,7 @@ MapInfoHandler extends BaseClientRequestHandler {
                     else {
                         //giai phong 1 ngoi nha pending
                         mapInfo.releaseBuilding(); 
-                        userInfo.reduceUserResources(gold,elixir,darkElixir,check_resource, add_construction.type, true);
+                        userInfo.reduceUserResources(gold,elixir,darkElixir,check_resource+coin, add_construction.type, true);
                         userInfo.saveModel(user.getId());
                         mapInfo.saveModel(user.getId());
                         
@@ -219,88 +255,119 @@ MapInfoHandler extends BaseClientRequestHandler {
                 //linhrafa --Neu false
                 //tra ve false
                 send(new ResponseRequestAddConstruction(ServerConstant.ERROR), user);
-            }
-            
-//            if (checkPosition){     //check vi tri           
-//                check_resource = checkResource(userInfo, mapInfo.listBuilding.get(add_construction.id));
-//                if (check_resource>0){ //neu so G can bo sung lon hon 0
-//                    if(add_construction.is_use_G_buy_resource){ //neu nguoi dung dong y tra G
-////                        check_builder = checkBuilder(); //dem so tho xay dang ranh
-////                        if (check_builder<=0){ //neu khong du tho xay
-////                            if (add_construction.is_use_G_release_builder){ //dong y tra tien giai phong tho xay
-////                                validate_add_construction = true;   
-////                                int G_toReleaseBuilder = mapInfo.getGToReleaseBuilder(); //chu y' ko release building trong nay
-////                                if (user.payResource(G_toReleaseBuilder)){ //neu du tien de tra  thi` tra tien va tra ve true
-////                                    mapInfo.releaseBuilding();
-////                                }
-////                                else {
-////                                    validate_add_construction = false;
-////                                }
-////                            }
-////                            else {
-////                                validate_add_construction = false;    
-////                            }
-////                            
-////                        } else {
-////                            
-////                        }
-//                        
-//                        
-//                    }
-//                    else {
-//                        validate_add_construction = false;
-//                        
-//                    }
-//                }
-//            }
-//            else {
-//                validate_add_construction = false;
-//            }
-            
-            
-                
-                   
+            }      
                } catch (Exception e) {
             }
     }
     
-    private int checkResource(ZPUserInfo user,String type) {
+    private void processUpgradeConstruction(User user, RequestUpgradeConstruction upgrade_construction) {
+        MapInfo mapInfo;
+        try {
+            ZPUserInfo userInfo = (ZPUserInfo) ZPUserInfo.getModel(user.getId(), ZPUserInfo.class);
+            if (userInfo == null) {
+               ////send response error
+               send(new ResponseRequestUpgradeConstruction(ServerConstant.ERROR), user);
+            }
+            //*------------------------------------------------
+            mapInfo = (MapInfo) MapInfo.getModel(user.getId(), MapInfo.class);
+            if (mapInfo == null) {               
+               //send response error
+               send(new ResponseRequestUpgradeConstruction(ServerConstant.ERROR), user);
+            }
+            //*------------------------------------------------
+            Building building = mapInfo.listBuilding.get(upgrade_construction.id);
+            int check_resource = 0;
+            check_resource = checkResource(userInfo,(building.type),building.level+1);
+            System.out.println("check_resource chuyen doi to upgrade building= " + check_resource );
+            int coin = getCoin(building.type,building.level+1);
+
+            if ((check_resource+coin < userInfo.builderNumber)){
+                //get resource cua nha
+                int gold = getGold(building.type,building.level+1);
+                int elixir = getElixir(building.type,building.level+1);
+                int darkElixir = getDarkElixir(building.type,building.level+1);
+                
+                
+                // kiem tra tho xay
+            //                if (mapInfo.getBuilderNotFree()>=userInfo.builderNumber){ //neu khong co tho xay
+                if (mapInfo.getBuilderNotFree()>=0){ //neu khong co tho xay
+
+                    int g = mapInfo.getGToReleaseBuilder();
+                    check_resource = check_resource +g;
+                    if (userInfo.coin < check_resource ){ //neu khong du tien mua tho xay
+                        //linhrafa --Neu false
+                        //tra ve false
+                        send(new ResponseRequestAddConstruction(ServerConstant.ERROR), user);
+                    }
+                    else {
+                        //giai phong 1 ngoi nha pending
+                        mapInfo.releaseBuilding(); 
+                        userInfo.reduceUserResources(gold,elixir,darkElixir,check_resource, building.type, false);
+                        userInfo.saveModel(user.getId());
+                        mapInfo.saveModel(user.getId());
+                        
+                        send(new ResponseRequestAddConstruction(ServerConstant.SUCCESS), user);
+                    }
+                } else { //neu da du tho xay
+                    userInfo.reduceUserResources(gold,elixir,darkElixir,check_resource, building.type, false);
+                    
+                    userInfo.saveModel(user.getId());
+                    mapInfo.saveModel(user.getId());
+                    
+                    send(new ResponseRequestAddConstruction(ServerConstant.SUCCESS), user);
+                }
+                
+            }
+            else {
+                //linhrafa --Neu false
+                //tra ve false
+                send(new ResponseRequestAddConstruction(ServerConstant.ERROR), user);
+            }      
+            
+        } catch (Exception e) {
+        }
+        
+        
+    }
+    private int checkResource(ZPUserInfo user,String type, int level) {
         //Kiem tra tai nguyen co du khong
         //Neu g = 0 la du tai nguyen
         //Neu g > 0 la so G con thieu so voi cost
+        
+        
         int g = 0;
-        int gold_bd = getGold(type);
+        int gold_bd = getGold(type,level);
         System.out.println("check Resource, gold  = "+ gold_bd);
         if (user.gold < gold_bd){
             g+=goldToG(gold_bd-user.gold);                    
         };
         
-        int elixir_bd = getElixir(type);
+        int elixir_bd = getElixir(type,level);
         if (user.elixir < elixir_bd){
             g+=elixirToG(elixir_bd-user.elixir);                    
         };
         
-        int darkElixir_bd = getDarkElixir(type);
+        int darkElixir_bd = getDarkElixir(type,level);
         if (user.darkElixir < darkElixir_bd){
             g+=darkElixirToG(darkElixir_bd-user.darkElixir);                    
         };
         
-        int coin_bd = getCoin(type);
-        System.out.println("check Resource, coin_bd  = "+ coin_bd);
-        System.out.println("check Resource, user.coin  = "+ user.coin);
-        
-        if (user.coin < coin_bd){
-            g+=coin_bd-user.coin; 
-        };
-    System.out.println("so coin can them la = "+g);
+//        int coin_bd = getCoin(type,level);
+//        System.out.println("check Resource, coin_bd  = "+ coin_bd);
+//        System.out.println("check Resource, user.coin  = "+ user.coin);
+//        
+//        if (user.coin < coin_bd){
+//            g+=coin_bd-user.coin; 
+//        };
+    System.out.println("so coin de bu vao cac tai nguyen khac la = "+g);
         return g;
     }
 
-    public int getGold(String type){
+    public int getGold(String type, int level){
         int g = 0;
         try {
             
-            JSONObject construction = ServerConstant.config.getJSONObject(type).getJSONObject("1");
+            JSONObject construction = ServerConstant.config.getJSONObject(type).getJSONObject(String.valueOf(level));
             System.out.println(">>>>>>>>>>>> construction.hitpoints = "+ type+ ":"+construction.getInt("hitpoints"));
             //Object checkObj = construction.opt("gold");   
             //if (construction.getJSONObject("gold")!= null ){ //neu nha co ton vang
@@ -316,10 +383,10 @@ MapInfoHandler extends BaseClientRequestHandler {
         return g;
     }
     
-    public int getDarkElixir(String type){
+    public int getDarkElixir(String type, int level){
         int g = 0;
         try {
-            JSONObject construction = ServerConstant.config.getJSONObject(type).getJSONObject("1");
+            JSONObject construction = ServerConstant.config.getJSONObject(type).getJSONObject(String.valueOf(level));
             g = construction.getInt("darkElixir");
 //            Object checkObj = construction.opt("darkElixir");   
 //            if (checkObj instanceof JSONObject){ //neu nha co ton vang
@@ -329,14 +396,14 @@ MapInfoHandler extends BaseClientRequestHandler {
 //                
 //            }
         } catch (JSONException e) {            
-            System.out.println("darkElixir khong ton tai nguyen");
+            System.out.println("get darkElixir khong ton tai nguyen");
         }
         return g;
     }
-    public int getElixir(String type){
+    public int getElixir(String type, int level){
         int g = 0;
         try {
-            JSONObject construction = ServerConstant.config.getJSONObject(type).getJSONObject("1");
+            JSONObject construction = ServerConstant.config.getJSONObject(type).getJSONObject(String.valueOf(level));
             g = construction.getInt("elixir");
 //            Object checkObj = construction.opt("elixir");   
 //            if (checkObj instanceof JSONObject){ //neu nha co ton vang
@@ -350,11 +417,12 @@ MapInfoHandler extends BaseClientRequestHandler {
         }
         return g;
     }
-    public int getCoin(String type){
+    public int getCoin(String type, int level){
+        System.out.println("level in getCoin: "+ level);
         int g = 0;
         try {
-            JSONObject construction = ServerConstant.config.getJSONObject(type).getJSONObject("1");
-            //System.out.println("coin>>>>>>> construction.hitpoints = "+ type+ ":"+construction.getInt("hitpoints"));
+            JSONObject construction = ServerConstant.config.getJSONObject(type).getJSONObject(String.valueOf(level));
+            System.out.println("coin>>>>>>> construction.hitpoints = "+ type+ ":"+construction.getInt("hitpoints"));
             g = construction.getInt("coin");
 //            Object checkObj = construction.opt("coin");   
 //            if (checkObj instanceof JSONObject){ //neu nha co ton vang
@@ -363,6 +431,7 @@ MapInfoHandler extends BaseClientRequestHandler {
 //                System.out.println("Obj.getInt(\"coin\") = " + Obj.getInt("coin"));
 //                g = Obj.getInt("coin");
 //            }
+            System.out.println("getCoin  ton: "+g);
         } catch (JSONException e) {
             System.out.println("getCoin khong ton tai nguyen");
         }
@@ -379,6 +448,46 @@ MapInfoHandler extends BaseClientRequestHandler {
 
     private int darkElixirToG(int darkElixir_bd) {
         return darkElixir_bd;
+    }
+
+
+    private void processFinishTimeConstruction(User user, RequestFinishTimeConstruction finish_time) {
+        MapInfo mapInfo;
+        try {
+            mapInfo = (MapInfo) MapInfo.getModel(user.getId(), MapInfo.class);
+            if (mapInfo == null) {
+                //send response error
+            }  
+            Building building = mapInfo.listBuilding.get(finish_time.id);
+            long time_cur = System.currentTimeMillis();
+            long distance = time_cur - building.timeStart;
+            long time_start = building.getTimeBuild();
+            if ((distance > time_start) && time_start!=-1){
+                mapInfo.listBuilding.get(finish_time.id).setStatus("complete");
+            }
+            
+            mapInfo.saveModel(user.getId());
+            
+            send(new ResponseRequestFinishTimeConstruction(ServerConstant.SUCCESS), user);
+            
+            
+        } catch (Exception e) {
+        }
+        
+        
+        
+    }
+
+
+    private void processGetServerTime(User user, RequestGetServerTime finish_time) {
+        try {
+            System.out.println("getID:" + user.getId() );   
+            long time_cur = System.currentTimeMillis();
+            send(new ResponseRequestServerTime(time_cur), user);
+        } catch (Exception e) {
+
+        }
+
     }
 }
 

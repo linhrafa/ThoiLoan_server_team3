@@ -8,11 +8,12 @@ import bitzero.util.common.business.CommonHandle;
 import java.nio.ByteBuffer;
 
 
-
-
-public class RequestMapInfo extends BaseCmd{
-    //public int id;
-    public RequestMapInfo(DataCmd dataCmd) {
+public class RequestUpgradeConstruction extends BaseCmd{
+    public int id;
+    public int posX;
+    public int posY;
+    
+    public RequestUpgradeConstruction(DataCmd dataCmd) {
         super(dataCmd);
         unpackData();
     }
@@ -21,9 +22,10 @@ public class RequestMapInfo extends BaseCmd{
     public void unpackData() {
         ByteBuffer bf = makeBuffer();
         try {
-            //id = readInt(bf);            
+            id = readInt(bf);
+            posX = readInt(bf);
+            posY = readInt(bf);          
         }catch (Exception e) {
             CommonHandle.writeErrLog(e);}
     }
-    
 }

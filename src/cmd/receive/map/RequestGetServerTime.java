@@ -10,9 +10,9 @@ import java.nio.ByteBuffer;
 
 
 
-public class RequestMapInfo extends BaseCmd{
+public class RequestGetServerTime extends BaseCmd{
     //public int id;
-    public RequestMapInfo(DataCmd dataCmd) {
+    public RequestGetServerTime(DataCmd dataCmd) {
         super(dataCmd);
         unpackData();
     }

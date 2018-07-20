@@ -15,7 +15,8 @@ public class ResponseRequestUserInfo extends BaseMsg {
         super(CmdDefine.GET_USER_INFO);
         info = _info;        
     }
-    
+
+   
     @Override
     public byte[] createData() {
         ByteBuffer bf = makeBuffer();
@@ -27,7 +28,7 @@ public class ResponseRequestUserInfo extends BaseMsg {
         bf.putInt(info.elixir);
         bf.putInt(info.darkElixir); 
         bf.putInt(info.builderNumber);                  
-        
+        bf.putLong(System.currentTimeMillis());
         
         return packBuffer(bf);
     }

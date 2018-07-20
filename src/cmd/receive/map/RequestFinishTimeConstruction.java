@@ -10,9 +10,9 @@ import java.nio.ByteBuffer;
 
 
 
-public class RequestMapInfo extends BaseCmd{
-    //public int id;
-    public RequestMapInfo(DataCmd dataCmd) {
+public class RequestFinishTimeConstruction extends BaseCmd{
+    public int id;
+    public RequestFinishTimeConstruction(DataCmd dataCmd) {
         super(dataCmd);
         unpackData();
     }
@@ -21,9 +21,9 @@ public class RequestMapInfo extends BaseCmd{
     public void unpackData() {
         ByteBuffer bf = makeBuffer();
         try {
-            //id = readInt(bf);            
+            this.id = readInt(bf);
+            
         }catch (Exception e) {
             CommonHandle.writeErrLog(e);}
     }
-    
 }

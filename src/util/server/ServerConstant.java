@@ -21,6 +21,10 @@ public class ServerConstant {
     public static final int HEIGHT_MAP = 40;
     public static final int WEIGHT_MAP = 40;
     
+    public static final String complete_status = "complete"; //nha ranh
+    public static final String pending_status = "pending"; // nha dang xay
+    public static final String upgrade_status = "upgrade"; //nha dang upgrade
+    
     public static JSONObject configInitGame ;
     public static JSONObject configArmyCamp ;
     public static JSONObject configBarrack ;
@@ -370,4 +374,6 @@ public class ServerConstant {
         }
 
     }
+    
+    
 }
