@@ -249,10 +249,10 @@ MapInfoHandler extends BaseClientRequestHandler {
                     
                     //get resource cua nha
                     
-                    int g = mapInfo.getGToReleaseBuilder();
-                    System.out.println("So G de giai phong la "+ g);
-                    check_resource = check_resource +g;
-                    if (userInfo.coin < coin+check_resource+g ){ //neu khong du tien mua tho xay
+                    int g_release = mapInfo.getGToReleaseBuilder();
+                    System.out.println("So G de giai phong la "+ g_release);
+//                    check_resource = check_resource +g;
+                    if (userInfo.coin < coin+check_resource+g_release ){ //neu khong du tien mua tho xay
                         //linhrafa --Neu false
                         //tra ve false
                         send(new ResponseRequestAddConstruction(ServerConstant.ERROR), user);
@@ -268,7 +268,7 @@ MapInfoHandler extends BaseClientRequestHandler {
                         
                         mapArray = mapInfo.getMapArray();
                         
-                        userInfo.reduceUserResources(gold,elixir,darkElixir,check_resource+coin, add_construction.type, true);
+                        userInfo.reduceUserResources(gold,elixir,darkElixir,check_resource+coin+g_release, add_construction.type, true);
                         userInfo.saveModel(user.getId());
                         mapInfo.saveModel(user.getId());
                         
@@ -276,7 +276,7 @@ MapInfoHandler extends BaseClientRequestHandler {
                     }
                 } 
                 else { //neu da du tho xay
-                    userInfo.reduceUserResources(gold,elixir,darkElixir,check_resource, add_construction.type, true);
+                    userInfo.reduceUserResources(gold,elixir,darkElixir,check_resource+coin, add_construction.type, true);
                     mapInfo.addBuilding(add_construction.type, add_construction.posX, add_construction.posY,level, "pending");
                     userInfo.saveModel(user.getId());
                     mapInfo.saveModel(user.getId());
@@ -312,61 +312,78 @@ MapInfoHandler extends BaseClientRequestHandler {
                send(new ResponseRequestUpgradeConstruction(ServerConstant.ERROR), user);
                return;
             }
-            
-            if (mapInfo.listBuilding.get(upgrade_construction.id).equals("BDH_1")){
+            Building building = mapInfo.listBuilding.get(upgrade_construction.id);
+            if (building.type.equals("BDH_1") || building.status.equals("destroy")){
                     send(new ResponseRequestUpgradeConstruction(ServerConstant.ERROR), user);
                     return;
                 }
             //*------------------------------------------------
-        Building building = mapInfo.listBuilding.get(upgrade_construction.id);
+        
         int exchange_resource = 0;
         exchange_resource = checkResource(userInfo,(building.type),building.level+1);
             
         System.out.println("check_resource chuyen doi to upgrade building= " + exchange_resource );
         int coin = getCoin(building.type,building.level+1);
 
-        if (exchange_resource+coin<userInfo.coin){ //coin de bu vao su chuyen doi < coin hien tai cua nguoi dung
-            //add building to pending
+        if ((exchange_resource+coin<userInfo.coin)){ 
+                //add building to pending
+                int gold = getGold(building.type,building.level+1);
+                int elixir = getElixir(building.type,building.level+1);
+                int darkElixir = getDarkElixir(building.type,building.level+1);
                 
-            //get resource cua nha
-            int gold = getGold(building.type,building.level+1);
-            int elixir = getElixir(building.type,building.level+1);
-            int darkElixir = getDarkElixir(building.type,building.level+1);
+                mapInfo.print();
                 
-            // kiem tra tho xay
-            if (mapInfo.getBuilderNotFree()>=userInfo.builderNumber){ //neu khong co tho xay
-
-                int g = mapInfo.getGToReleaseBuilder();
-                //exchange_resource = exchange_resource +g;
-                if (userInfo.coin < coin+exchange_resource+g ){ //neu khong du tien giai phong tho xay
-                    //linhrafa --Neu false
-                    //tra ve false
-                    send(new ResponseRequestUpgradeConstruction(ServerConstant.ERROR), user);
-                    return;
-                }
-                else {
-                    //giai phong 1 ngoi nha pending //linhrafa them 
-                    mapInfo.releaseBuilding(); 
-                    userInfo.reduceUserResources(gold,elixir,darkElixir,exchange_resource+coin, building.type, false);
-                    userInfo.saveModel(user.getId());
-                    mapInfo.saveModel(user.getId());
+                System.out.println("so tho xay hien tai la: "+ userInfo.builderNumber);
+                
+                // kiem tra tho xay
+                //                if (mapInfo.getBuilderNotFree()>=userInfo.builderNumber){ //neu khong co tho xay
+                if (mapInfo.getBuilderNotFree()>=userInfo.builderNumber){ //neu khong co tho xay
+                    
+                    System.out.println("CAN GIAI PHONG THO XAY");
+                    
+                    //get resource cua nha
+                    
+                    int g_release = mapInfo.getGToReleaseBuilder();
+                    System.out.println("So G de giai phong la "+ g_release);
+//                    check_resource = check_resource +g;
+                    if (userInfo.coin < coin+exchange_resource+g_release ){ //neu khong du tien mua tho xay
+                        //linhrafa --Neu false
+                        //tra ve false
+                        send(new ResponseRequestAddConstruction(ServerConstant.ERROR), user);
+                    }
+                    else {
+                        //giai phong 1 ngoi nha pending
                         
-                    send(new ResponseRequestUpgradeConstruction(ServerConstant.SUCCESS), user);
-                }
-                } else { //neu da du tho xay  //linhrafa
-                    userInfo.reduceUserResources(gold,elixir,darkElixir,exchange_resource, building.type, false);
+                        mapInfo.releaseBuilding(); 
+                        
+                        mapInfo.print();
+                        
+                        userInfo.reduceUserResources(gold,elixir,darkElixir,exchange_resource+coin+g_release, building.type, false);
+                        mapInfo.upgradeBuilding(upgrade_construction.id);
+                        
+                        userInfo.saveModel(user.getId());
+                        mapInfo.saveModel(user.getId());
+                        
+                        send(new ResponseRequestUpgradeConstruction(ServerConstant.SUCCESS), user);
+                    }
+                } 
+                else { //neu da du tho xay
+                    userInfo.reduceUserResources(gold,elixir,darkElixir,exchange_resource+coin, building.type, false);                    
+                    mapInfo.upgradeBuilding(upgrade_construction.id);
                     
                     userInfo.saveModel(user.getId());
                     mapInfo.saveModel(user.getId());
                     
                     send(new ResponseRequestUpgradeConstruction(ServerConstant.SUCCESS), user);
                 }
+            
+                
                 
             }
         else {
             //linhrafa --Neu false
             //tra ve false
-            send(new ResponseRequestAddConstruction(ServerConstant.ERROR), user);
+            send(new ResponseRequestUpgradeConstruction(ServerConstant.ERROR), user);
             return;
         }                
             
@@ -508,6 +525,10 @@ MapInfoHandler extends BaseClientRequestHandler {
             Building building = mapInfo.listBuilding.get(finish_time.id);
             if (building.status.equals("destroy")){
                 System.out.println("Nha nay da huy");
+                return;
+            }
+            if (building.type.equals("BDH_1")){
+                System.out.println("Nha nay la nha tho xay ma` ma'");
                 return;
             }
             long time_cur = System.currentTimeMillis();

@@ -281,6 +281,12 @@ public class MapInfo extends DataModel{
             //System.out.println(building.type+" "+"time start: "+building.timeStart+" "+"distance: "+distance+"status "+building.status);
         }
     }
+    
+    public void upgradeBuilding(int _id){
+        this.listBuilding.get(_id).status = "upgrade";
+        this.listBuilding.get(_id).timeStart = System.currentTimeMillis();
+    }
+    
     public void print(){
         System.out.println("***********in list building **********************");
         for (Building building : this.listBuilding){
