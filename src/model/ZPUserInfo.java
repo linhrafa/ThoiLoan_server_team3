@@ -116,7 +116,7 @@ public class ZPUserInfo extends DataModel {
         }
         else {
             this.gold = this.gold - gold;
-            System.out.println("gold bi tru di " + gold);
+            System.out.println("gold bi tru di " + gold+ ", user con lai +"+ this.gold+" gold");
         }
         //tru elixir
         if (this.elixir < elixir){
@@ -126,7 +126,7 @@ public class ZPUserInfo extends DataModel {
         }
         else {
             this.elixir = this.elixir - elixir;
-            System.out.println("elixir bi tru di " + elixir);
+            System.out.println("elixir bi tru di " + elixir + ", user con lai +"+ this.elixir+" elixir");
         }
         if (this.darkElixir < darkElixir){
             
@@ -135,13 +135,13 @@ public class ZPUserInfo extends DataModel {
         }
         else {
             this.darkElixir = this.darkElixir - darkElixir;
-            System.out.println("darkElixir bi tru di " + darkElixir);
+            System.out.println("darkElixir bi tru di " + darkElixir + ", user con lai +"+ this.darkElixir+" darkElixir");
         }
         
         this.coin = this.coin - coin;
-        System.out.println("coin bi tru di " + coin);
+        System.out.println("coin bi tru di " + coin + ", user con lai +"+ this.coin+" coin");
         
-        if (type.equals("BDH_1") && isAdd){
+        if (type.equals("BDH_1") ){
             this.builderNumber = this.builderNumber + 1;
         }
         

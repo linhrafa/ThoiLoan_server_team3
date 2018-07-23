@@ -48,9 +48,11 @@ public class Building{
     }
 
     long getTimeConLai() {
-        
-        
-        return 0L;
+        long time_cur = System.currentTimeMillis();
+        long time_da_chay = time_cur-this.timeStart;
+        System.out.println("time_cur"+time_cur+" this.timeStart= "+this.timeStart+ " time can xay: "+this.getTimeBuild());
+        return (this.getTimeBuild()-time_da_chay);
+        //return 0L;
         
     }
 
@@ -58,12 +60,15 @@ public class Building{
         this.status = string;
     }
     public long getTimeBuild() {
+        if (this.type.equals("BDH_1")){
+            return 0;
+        }
         try {
             JSONObject construction = ServerConstant.config.getJSONObject(this.type).getJSONObject(Integer.toString(this.level));
-            return ( (long) construction.getInt("buildTime"));
+            return ( (long) construction.getInt("buildTime")*1000);
         } catch (JSONException e){
             System.out.println("get buildTime error");
-            return -1;
+            return 0;
         }
     }
 

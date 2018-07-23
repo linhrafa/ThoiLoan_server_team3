@@ -157,6 +157,7 @@ public class MapInfo extends DataModel{
         Building building = new Building(this.size_building,type,level,posX,posY, status);                
         this.size_building++;
         this.listBuilding.add(building);
+        System.out.println("add them building "+ building.type+", time start: "+building.timeStart+", status ="+building.status);
     }
     public MapArray getMapArray(){
         MapArray mapArray = new MapArray();
@@ -194,37 +195,50 @@ public class MapInfo extends DataModel{
 
 
     public int getBuilderNotFree() {
+        checkStatus();
         int kq = 0;
         for (Building building : this.listBuilding){
-            System.out.println("check status - building"+building.type+" , status = "+building.status);
+            System.out.println("check status - building"+building.type+" , status = "+building.status+ "time_Start = "+ building.timeStart);
             if (building.status.equals("pending")|| building.status.equals("upgrade")){
                 kq++;
             }
         }
-        System.out.println("check status - so building free la:"+kq);
+        System.out.println("check status - so tho xay dang lam la:"+kq);
         return kq;
     }
 
     public int getGToReleaseBuilder() {
+        short dd = 0;
         long kq = 999999999;
         for (Building building : this.listBuilding){
             if (building.status.equals("pending")|| building.status.equals("upgrade")){
-                kq = Math.min(kq,building.getTimeConLai());
+                if (dd==0){
+                    dd++;
+                    kq = building.getTimeConLai();
+                }
+                else {
+                    kq = Math.min(kq,building.getTimeConLai());
+                }
             }
+            System.out.println("kq nha giai phong = "+kq);
         }
+        
         if (kq ==999999999) {
             return -1;
         }
         else {
+            
             return timeToG(kq);
         }
     }
 
-    private int timeToG(long kq) { //linhrafa chua viet gi
-        return 0;
+    private int timeToG(long time) { 
+        System.out.println("time="+Math.round(time/60000));
+        return (int)(Math.ceil((time/60000)));
     }
 
     public void releaseBuilding() {
+        System.out.println(">>>>>releaseBuilding");
         long time = 999999999;
         int kq =-1;
         for (Building building : this.listBuilding){
@@ -236,20 +250,41 @@ public class MapInfo extends DataModel{
                 }
             }
         }
+        System.out.println(".Building ddc release la: "+ this.listBuilding.get(kq).type+ "time_con_lai= "+ time);
         if (this.listBuilding.get(kq).getStatus().equals("upgrade")){
             this.listBuilding.get(kq).level = this.listBuilding.get(kq).level +1;
+            this.listBuilding.get(kq).setStatus("complete");
+        } 
+        else if (this.listBuilding.get(kq).getStatus().equals("pending")){
+            this.listBuilding.get(kq).setStatus("complete");
         }
-        this.listBuilding.get(kq).setStatus("complete");
     }
 
     public void checkStatus() {
+        System.out.println("***********checkbuilding **********************");
         for (Building building : this.listBuilding){
+                
+                
                 long time_cur = System.currentTimeMillis();
                 long distance = time_cur - building.timeStart;
-                long time_start = building.getTimeBuild();
-                if ((distance > time_start) && time_start!=-1){
+                long time_xay = building.getTimeBuild();
+                
+                System.out.println("distance = "+ distance+", time_can_xay="+time_xay);
+                
+                if ((!building.status.equals("complete")) &&(distance > time_xay) && building.timeStart!=-1){
+                    if (building.status.equals("upgrade")){
+                        building.level ++;
+                    }
                     building.setStatus("complete");
+                    
                 }
+            //System.out.println(building.type+" "+"time start: "+building.timeStart+" "+"distance: "+distance+"status "+building.status);
+        }
+    }
+    public void print(){
+        System.out.println("***********in list building **********************");
+        for (Building building : this.listBuilding){
+            System.out.println(building.type+" "+"time start: "+building.timeStart+" "+"status "+building.status);
         }
     }
 }

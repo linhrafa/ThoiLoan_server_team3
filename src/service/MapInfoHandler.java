@@ -93,7 +93,7 @@ MapInfoHandler extends BaseClientRequestHandler {
                     processFinishTimeConstruction(user,finish_time);
                     break;
                 case CmdDefine.GET_SERVER_TIME:
-                    System.out.println("GET_SERVER_TIME");
+                    //System.out.println("GET_SERVER_TIME");
                     RequestGetServerTime server_time = new RequestGetServerTime(dataCmd);
                     processGetServerTime(user,server_time);
                     break;
@@ -126,7 +126,8 @@ MapInfoHandler extends BaseClientRequestHandler {
 //            System.out.println(">>>>>MAP ARRAY:");
            
             mapInfo.checkStatus();
-            
+            mapInfo.print();
+            mapInfo.saveModel(user.getId());
             send(new ResponseRequestMapInfo(mapInfo), user);
             
         } catch (Exception e) {
@@ -186,69 +187,105 @@ MapInfoHandler extends BaseClientRequestHandler {
                //send response error
                send(new ResponseRequestAddConstruction(ServerConstant.ERROR), user);
             }
+            
+            
+            
             MapArray mapArray = new MapArray();
             mapArray = mapInfo.getMapArray();
             
             boolean checkPosition = mapArray.check_addBuilding(mapInfo, add_construction.type, add_construction.posX,add_construction.posY);
             System.out.println("checkPosition = " + checkPosition );
             
-            //CHECK_RESOURCE 
+            //CHECK_RESOURCE *********************************************
             int level =1;
-            if (add_construction.type.equals("BDH_1")){
-                level = userInfo.builderNumber+1;
-                if (level>5){
-                    send(new ResponseRequestAddConstruction(ServerConstant.ERROR), user);
-                    return;
-                }
-            }
-            System.out.println("new level = " + level );
+                   if (add_construction.type.equals("BDH_1")){
+                       level=userInfo.builderNumber+1;
+                   }
+            //System.out.println("new level = " + level );
             int check_resource = 0;
             check_resource = checkResource(userInfo,(add_construction.type),level);
-            System.out.println("check_resource coin bu vao tai nguyen khac to add building= " + check_resource );
+               
+            
+            //System.out.println("check_resource coin bu vao tai nguyen khac to add building= " + check_resource );
+            
             int coin = getCoin(add_construction.type,level); //coin de thuc hien thao tac voi nha
             
-            System.out.println("check_resource+coin= " + check_resource+coin );
+            System.out.println("check_resource+coin= " + (check_resource+coin) );
             System.out.println("userInfo.coin= " + userInfo.coin );
             
-            if (checkPosition && (check_resource+coin<userInfo.coin)){ //coin de bu vao su chuyen doi < coin hien tai cua nguoi dung
+            if (checkPosition && (check_resource+coin<userInfo.coin)){ 
                 //add building to pending
-                mapInfo.addBuilding(add_construction.type, add_construction.posX, add_construction.posY,level, "pending");
-                mapArray = mapInfo.getMapArray();
-                //get resource cua nha
                 int gold = getGold(add_construction.type,level);
                 int elixir = getElixir(add_construction.type,level);
                 int darkElixir = getDarkElixir(add_construction.type,level);
                 
+                mapInfo.print();
                 
+                //Xet truong hop dac biet
+                if (add_construction.type.equals("BDH_1")){
+                    level = userInfo.builderNumber+1;
+                    if (level>5){
+                        send(new ResponseRequestAddConstruction(ServerConstant.ERROR), user);
+                        return;
+                    }
+                    mapInfo.addBuilding(add_construction.type, add_construction.posX, add_construction.posY,level, "complete");
+                    userInfo.reduceUserResources(gold,elixir,darkElixir,check_resource+coin, add_construction.type, true);
+                    userInfo.saveModel(user.getId());
+                    mapInfo.saveModel(user.getId());
+                    
+                    send(new ResponseRequestAddConstruction(ServerConstant.SUCCESS), user);
+                    return;
+                }
+                else { //neu khong phai nha BuildingHut
+                
+                
+                
+                System.out.println("so tho xay hien tai la: "+ userInfo.builderNumber);
                 
                 // kiem tra tho xay
-//                if (mapInfo.getBuilderNotFree()>=userInfo.builderNumber){ //neu khong co tho xay
-                if (mapInfo.getBuilderNotFree()>=0){ //neu khong co tho xay
-
+                //                if (mapInfo.getBuilderNotFree()>=userInfo.builderNumber){ //neu khong co tho xay
+                if (mapInfo.getBuilderNotFree()>=userInfo.builderNumber){ //neu khong co tho xay
+                    
+                    System.out.println("CAN GIAI PHONG THO XAY");
+                    
+                    //get resource cua nha
+                    
                     int g = mapInfo.getGToReleaseBuilder();
+                    System.out.println("So G de giai phong la "+ g);
                     check_resource = check_resource +g;
-                    if (userInfo.coin < coin ){ //neu khong du tien mua tho xay
+                    if (userInfo.coin < coin+check_resource+g ){ //neu khong du tien mua tho xay
                         //linhrafa --Neu false
                         //tra ve false
                         send(new ResponseRequestAddConstruction(ServerConstant.ERROR), user);
                     }
                     else {
                         //giai phong 1 ngoi nha pending
+                        
                         mapInfo.releaseBuilding(); 
+                        
+                        mapInfo.addBuilding(add_construction.type, add_construction.posX, add_construction.posY,level, "pending");
+                        
+                        mapInfo.print();
+                        
+                        mapArray = mapInfo.getMapArray();
+                        
                         userInfo.reduceUserResources(gold,elixir,darkElixir,check_resource+coin, add_construction.type, true);
                         userInfo.saveModel(user.getId());
                         mapInfo.saveModel(user.getId());
                         
                         send(new ResponseRequestAddConstruction(ServerConstant.SUCCESS), user);
                     }
-                } else { //neu da du tho xay
+                } 
+                else { //neu da du tho xay
                     userInfo.reduceUserResources(gold,elixir,darkElixir,check_resource, add_construction.type, true);
-                    
+                    mapInfo.addBuilding(add_construction.type, add_construction.posX, add_construction.posY,level, "pending");
                     userInfo.saveModel(user.getId());
                     mapInfo.saveModel(user.getId());
                     
                     send(new ResponseRequestAddConstruction(ServerConstant.SUCCESS), user);
                 }
+            }
+                
                 
             }
             else {
@@ -371,13 +408,13 @@ MapInfoHandler extends BaseClientRequestHandler {
         try {
             
             JSONObject construction = ServerConstant.config.getJSONObject(type).getJSONObject(String.valueOf(level));
-            System.out.println(">>>>>>>>>>>> construction.hitpoints = "+ type+ ":"+construction.getInt("hitpoints"));
+            //System.out.println(">>>>>>>>>>>> construction.hitpoints = "+ type+ ":"+construction.getInt("hitpoints"));
             //Object checkObj = construction.opt("gold");   
             //if (construction.getJSONObject("gold")!= null ){ //neu nha co ton vang
                 
                
                 //System.out.println("user.gold = " + user.gold);
-                System.out.println("gold = " + construction.getInt("gold"));
+                //System.out.println("gold = " + construction.getInt("gold"));
                 g = construction.getInt("gold");
             //}
         } catch (JSONException e) {
@@ -455,6 +492,7 @@ MapInfoHandler extends BaseClientRequestHandler {
 
 
     private void processFinishTimeConstruction(User user, RequestFinishTimeConstruction finish_time) {
+        System.out.println(">>>>>>processFinishTimeConstruction");
         MapInfo mapInfo;
         try {
             mapInfo = (MapInfo) MapInfo.getModel(user.getId(), MapInfo.class);
