@@ -23,8 +23,8 @@ public class RequestUpgradeConstruction extends BaseCmd{
         ByteBuffer bf = makeBuffer();
         try {
             id = readInt(bf);
-            posX = readInt(bf);
-            posY = readInt(bf);          
+//            posX = readInt(bf);
+//            posY = readInt(bf);          
         }catch (Exception e) {
             CommonHandle.writeErrLog(e);}
     }

@@ -244,11 +244,11 @@ public class MapInfo extends DataModel{
         for (Building building : this.listBuilding){
                 if (building.status.equals("pending")|| building.status.equals("upgrade")){
                     //linhrafa neu dang upgrade thi tang level
-                if (time>building.getTimeConLai()){
-                    time = building.getTimeConLai();
-                    kq = building.id;
+                    if (time>building.getTimeConLai()){
+                        time = building.getTimeConLai();
+                        kq = building.id;
+                    }
                 }
-            }
         }
         System.out.println(".Building ddc release la: "+ this.listBuilding.get(kq).type+ "time_con_lai= "+ time);
         if (this.listBuilding.get(kq).getStatus().equals("upgrade")){
