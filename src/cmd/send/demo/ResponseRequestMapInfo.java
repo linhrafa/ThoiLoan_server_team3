@@ -44,7 +44,7 @@ public class ResponseRequestMapInfo extends BaseMsg {
         System.out.println("size" +size);
         bf.putInt(size);
         for (Obs obs : mapInfo.listObs) {
-            bf.putInt(obs.id);
+            bf.putInt(obs.id+5000);
             putStr(bf, obs.type);
             bf.putInt(obs.posX);
             bf.putInt(obs.posY);  

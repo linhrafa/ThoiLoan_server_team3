@@ -24,7 +24,9 @@ public class CmdDefine {
     
     public static final short GET_SERVER_TIME = 2100;
     public static final short FINISH_TIME_CONSTRUCTION = 2101;
+    public static final short QUICK_FINISH = 2102;
 
+    public static final short ADD_RESOURCE = 2500;
     public static final short GET_FRIENDS = 3001;
     public static final short FRIEND_SEND_MESSAGE = 3002;
     public static final short MESSAGE_GET_BOX = 3003;

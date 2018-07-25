@@ -9,8 +9,10 @@ import bitzero.server.extensions.data.DataCmd;
 
 import cmd.CmdDefine;
 
+import cmd.receive.user.RequestAddResource;
 import cmd.receive.user.RequestUserInfo;
 
+import cmd.send.demo.ResponseRequestAddResource;
 import cmd.send.demo.ResponseRequestUserInfo;
 
 import extension.FresherExtension;
@@ -57,6 +59,14 @@ public class UserHandler extends BaseClientRequestHandler {
 //                getUserInfo(user,reqInfo.username,reqInfo.password);
                 getUserInfo(user);
                 break;
+            
+            case CmdDefine.ADD_RESOURCE:
+                RequestAddResource reqAddResource = new RequestAddResource(dataCmd);            
+//                System.out.println("username : "+reqInfo.username);
+//                System.out.println("pass : "+reqInfo.password);
+//                getUserInfo(user,reqInfo.username,reqInfo.password);
+                getAddResource(user,reqAddResource);
+                break;
             }
         } catch (Exception e) {
             logger.warn("USERHANDLER EXCEPTION " + e.getMessage());
@@ -84,9 +94,26 @@ public class UserHandler extends BaseClientRequestHandler {
         }
 
     }
+    private void getAddResource(User user, RequestAddResource reqAddResource) {
+        try {
+            System.out.println("getID:" + user.getId() );
+            ZPUserInfo userInfo = (ZPUserInfo) ZPUserInfo.getModel(user.getId(), ZPUserInfo.class);
+            if (userInfo == null) {
+                send(new ResponseRequestAddResource(ServerConstant.ERROR), user); 
+            }    
+            userInfo.gold += reqAddResource.gold;
+            userInfo.elixir += reqAddResource.elixir;
+            userInfo.darkElixir += reqAddResource.darkElixir;
+            userInfo.coin += reqAddResource.coin;
+            
+            send(new ResponseRequestAddResource(ServerConstant.SUCCESS), user);
+        } catch (Exception e) {
 
+        }
+    }
     private void userDisconnect(User user) {
         // log user disconnect
     }
 
+    
 }

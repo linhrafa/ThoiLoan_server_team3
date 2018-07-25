@@ -7,6 +7,8 @@ import cmd.obj.map.Army;
 import cmd.obj.map.MapArray;
 import cmd.obj.map.Obs;
 
+import com.sun.jmx.remote.internal.ServerCommunicatorAdmin;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -17,12 +19,17 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
 
+import java.text.SimpleDateFormat;
+
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
 import java.util.Random;
+
+import java.util.TimeZone;
 
 import org.json.JSONObject;
 
@@ -51,7 +58,7 @@ public class MapInfo extends DataModel{
             this.InitJsonData();
         }
     private void InitJsonData() {
-        int number_obs =5;
+        int number_obs =57;
         List<Integer> list_obs = new ArrayList<Integer>();
         String path = System.getProperty("user.dir")+"/conf/";
 //        System.out.println("Working Directory = " + );
@@ -88,9 +95,9 @@ public class MapInfo extends DataModel{
 //                System.out.println("posX "+ house_type.getInt("posX")); 
 //                System.out.println("posy "+ house_type.getInt("posY")); 
                 if (key.equals("TOW_1")){
-                    addBuilding(key,house_type.getInt("posX"), house_type.getInt("posY"),6,"complete");
+                    addBuilding(key,house_type.getInt("posX")-1, house_type.getInt("posY")-1,1,"complete");
                 }else{
-                    addBuilding(key,house_type.getInt("posX"), house_type.getInt("posY"),1,"complete");
+                    addBuilding(key,house_type.getInt("posX")-1, house_type.getInt("posY")-1,1,"complete");
                 }
                     
             }
@@ -99,24 +106,25 @@ public class MapInfo extends DataModel{
             
             //du lieu co cay hoa la
                         
-            for(int i=0;i<number_obs;i++){                
-                while (true){
-                    int id_obs = new Random().nextInt(57)+1; 
+//            for(int id_obs=0;id_obs<number_obs;id_obs++){  
+//                list_obs.add(id_obs);
+               // while (true){
+                    //int id_obs = new Random().nextInt(57)+1; 
                     
-                    if (check(id_obs,list_obs)){      
-                        list_obs.add(id_obs);
+                  //  if (check(id_obs,list_obs)){      
                         
-                        break;
-                    }
-                }
-            }
-            for(int i:list_obs){
+                        
+                        //break;
+                   // }
+              //  }
+            //}
+            for(int i=0;i<number_obs;i++){
                 
-                String num = Integer.toString(i);
+                String num = Integer.toString(i+1);
                 //System.out.println("num =" +num);
                 JSONObject obs_type = (JSONObject) obs.get(num);
                 //System.out.println("obs_type =" +obs_type);
-                Obs _obs = new Obs(this.size_obs,obs_type.getString("type"),obs_type.getInt("posX"), obs_type.getInt("posY"));
+                Obs _obs = new Obs(this.size_obs,obs_type.getString("type"),obs_type.getInt("posX")-1, obs_type.getInt("posY")-1);
                 this.listObs.add(_obs);
                 this.size_obs++;
                 
@@ -170,6 +178,12 @@ public class MapInfo extends DataModel{
             //System.out.println(building.id+" "+building.posX + " "+building.posY);
         }
         
+        for (Obs obs : this.listObs) {
+            //System.out.println(">>>>>mamama:"+ building.type);
+            mapArray.addObs(this,obs.id,obs.posX,obs.posY);
+            //System.out.println(building.id+" "+building.posX + " "+building.posY);
+        }
+        
 //        System.out.println(">>>>>MAP ARRAY:");
 //        for (int i=0;i<40;i++){
 //            for(int j=0;j<40;j++){
@@ -214,10 +228,10 @@ public class MapInfo extends DataModel{
             if (building.status.equals("pending")|| building.status.equals("upgrade")){
                 if (dd==0){
                     dd++;
-                    kq = building.getTimeConLai();
+                    kq = building.getTimeConLai(building.status);
                 }
                 else {
-                    kq = Math.min(kq,building.getTimeConLai());
+                    kq = Math.min(kq,building.getTimeConLai(building.status));
                 }
             }
             System.out.println("kq nha giai phong = "+kq);
@@ -233,8 +247,25 @@ public class MapInfo extends DataModel{
     }
 
     private int timeToG(long time) { 
-        System.out.println("time="+Math.round(time/60000));
-        return (int)(Math.ceil((time/60000)));
+        System.out.println(">>>>>Thoi gian release la : "+ time/60000);
+        Date date = new Date(time);
+            // formattter
+            SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss.SSS");
+            formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+            // Pass date object
+            String formatted = formatter.format(date);
+            System.out.println("Result: " + formatted);
+        
+            long minute = (long) Math.floor(time / 60000);
+            
+        System.out.println("time1="+minute);
+        System.out.println("time2="+time % 60000);
+            if ( time%60000>0){
+                minute++;
+            }
+        
+        
+        return (int)(minute);
     }
 
     public void releaseBuilding() {
@@ -244,8 +275,8 @@ public class MapInfo extends DataModel{
         for (Building building : this.listBuilding){
                 if (building.status.equals("pending")|| building.status.equals("upgrade")){
                     //linhrafa neu dang upgrade thi tang level
-                    if (time>building.getTimeConLai()){
-                        time = building.getTimeConLai();
+                    if (time>building.getTimeConLai(building.status)){
+                        time = building.getTimeConLai(building.status);
                         kq = building.id;
                     }
                 }
@@ -267,7 +298,7 @@ public class MapInfo extends DataModel{
                 
                 long time_cur = System.currentTimeMillis();
                 long distance = time_cur - building.timeStart;
-                long time_xay = building.getTimeBuild();
+                long time_xay = building.getTimeBuild(building.status);
                 
                 System.out.println("distance = "+ distance+", time_can_xay="+time_xay);
                 
@@ -290,7 +321,7 @@ public class MapInfo extends DataModel{
     public void print(){
         System.out.println("***********in list building **********************");
         for (Building building : this.listBuilding){
-            System.out.println(building.type+" "+"time start: "+building.timeStart+" "+"status "+building.status);
+            System.out.println(building.type+" "+"time start: "+building.timeStart+" "+"status "+building.status+"level: "+building.level);
         }
     }
 }

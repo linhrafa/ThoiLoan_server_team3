@@ -2,6 +2,11 @@ package model;
 
 import java.sql.Time;
 
+import java.text.SimpleDateFormat;
+
+import java.util.Date;
+import java.util.TimeZone;
+
 import org.json.JSONException;
 
 import org.json.JSONObject;
@@ -47,11 +52,11 @@ public class Building{
         this.posY = y;
     }
 
-    long getTimeConLai() {
+    long getTimeConLai(String status) {
         long time_cur = System.currentTimeMillis();
         long time_da_chay = time_cur-this.timeStart;
-        System.out.println("time_cur"+time_cur+" this.timeStart= "+this.timeStart+ " time can xay: "+this.getTimeBuild());
-        return (this.getTimeBuild()-time_da_chay);
+        System.out.println("time_cur"+time_cur+" this.timeStart= "+this.timeStart+ " time can xay: "+this.getTimeBuild(status));
+        return (this.getTimeBuild(status)-time_da_chay);
         //return 0L;
         
     }
@@ -59,12 +64,16 @@ public class Building{
     public void setStatus(String string) {
         this.status = string;
     }
-    public long getTimeBuild() {
+    public long getTimeBuild(String status) {
         if (this.type.equals("BDH_1")){
             return 0;
         }
         try {
-            JSONObject construction = ServerConstant.config.getJSONObject(this.type).getJSONObject(Integer.toString(this.level));
+            int level = this.level;
+            if (status.equals("upgrade")){
+                level ++;
+            }
+            JSONObject construction = ServerConstant.config.getJSONObject(this.type).getJSONObject(Integer.toString(level));
             return ( (long) construction.getInt("buildTime")*1000);
         } catch (JSONException e){
             System.out.println("get buildTime error");
@@ -74,6 +83,32 @@ public class Building{
 
     public String getStatus() {
         return this.status;
+    }
+    public int getGtoQuickFinish(){
+        int g = 0;
+        long kq = this.getTimeConLai(this.status); 
+        return timeToG(kq);
+    }
+    private int timeToG(long time) { 
+        System.out.println(">>>>>Thoi gian release la : "+ time/60000);
+        Date date = new Date(time);
+            // formattter
+            SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss.SSS");
+            formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+            // Pass date object
+            String formatted = formatter.format(date);
+            System.out.println("Result: " + formatted);
+        
+            long minute = (long) Math.floor(time / 60000);
+            
+        System.out.println("time1="+minute);
+        System.out.println("time2="+time % 60000);
+            if ( time%60000>0){
+                minute++;
+            }
+        
+        
+        return (int)(minute);
     }
 }
 

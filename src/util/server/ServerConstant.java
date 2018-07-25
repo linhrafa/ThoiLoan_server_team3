@@ -14,6 +14,8 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
 
+import java.util.Iterator;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -35,6 +37,8 @@ public class ServerConstant {
     public static JSONObject configTownHall;
     public static JSONObject configTroop;
     public static JSONObject configTroopBase;
+    public static JSONObject configDefence;
+    public static JSONObject configObstacle;
     public static JSONObject config;
     
     public static final short SUCCESS = 1;
@@ -276,6 +280,36 @@ public class ServerConstant {
         }
     }
     
+    public static void readConfigDefence(){
+        String path = System.getProperty("user.dir")+"/conf/Config_json/";
+        StringBuffer contents = new StringBuffer();
+        
+        try {
+            File file = new File(path+"Defence.json");
+            Reader r = new InputStreamReader(new FileInputStream(file), "UTF-8");
+            BufferedReader reader = new BufferedReader(r);
+            String text = null;
+            
+            while ((text = reader.readLine()) != null){
+                contents.append(text).append(System.getProperty("line.separator"));
+            }
+        } catch (Exception e) {
+            CommonHandle.writeErrLog(e);
+        }
+        
+        try {
+            ServerConstant.configDefence = new JSONObject(contents.toString());
+            
+            Writer w = new OutputStreamWriter(new FileOutputStream(path+"configDefence.txt"),"UTF-8");
+            BufferedWriter fout = new BufferedWriter(w);
+            fout.write(ServerConstant.configDefence.toString());
+            fout.close();
+            
+        } catch (Exception e){
+            CommonHandle.writeErrLog(e);
+        }
+    }
+    
     public static void readConfigTroop(){
         String path = System.getProperty("user.dir")+"/conf/Config_json/";
         StringBuffer contents = new StringBuffer();
@@ -335,6 +369,36 @@ public class ServerConstant {
             CommonHandle.writeErrLog(e);
         }
     }
+    
+    public static void readConfigObstacle(){
+        String path = System.getProperty("user.dir")+"/conf/Config_json/";
+        StringBuffer contents = new StringBuffer();
+        
+        try {
+            File file = new File(path+"Obstacle.json");
+            Reader r = new InputStreamReader(new FileInputStream(file), "UTF-8");
+            BufferedReader reader = new BufferedReader(r);
+            String text = null;
+            
+            while ((text = reader.readLine()) != null){
+                contents.append(text).append(System.getProperty("line.separator"));
+            }
+        } catch (Exception e) {
+            CommonHandle.writeErrLog(e);
+        }
+        
+        try {
+            ServerConstant.configObstacle = new JSONObject(contents.toString());
+            
+            Writer w = new OutputStreamWriter(new FileOutputStream(path+"configObstacle.txt"),"UTF-8");
+            BufferedWriter fout = new BufferedWriter(w);
+            fout.write(ServerConstant.configObstacle.toString());
+            fout.close();
+            
+        } catch (Exception e){
+            CommonHandle.writeErrLog(e);
+        }
+    }
     public static void readConfig(){
         readConfigArmyCamp();
         readConfigBarrack();
@@ -344,6 +408,8 @@ public class ServerConstant {
         readConfigStorage();
         readConfigTownHall();
         readConfigTroopBase();
+        readConfigDefence();
+        readConfigObstacle();
         
         
         String path = System.getProperty("user.dir")+"/conf/Config_json/";
@@ -355,10 +421,25 @@ public class ServerConstant {
             ServerConstant.config.put("BDH_1", configBuilderHut.getJSONObject("BDH_1"));
             ServerConstant.config.put("LAB_1", configLaboratory.getJSONObject("LAB_1"));
             ServerConstant.config.put("RES_1", configResource.getJSONObject("RES_1"));
+            ServerConstant.config.put("RES_2", configResource.getJSONObject("RES_2"));
             ServerConstant.config.put("STO_1", configStorage.getJSONObject("STO_1"));
             ServerConstant.config.put("STO_2", configStorage.getJSONObject("STO_2"));
             ServerConstant.config.put("STO_3", configStorage.getJSONObject("STO_3"));
             ServerConstant.config.put("TOW_1", configTownHall.getJSONObject("TOW_1"));
+            ServerConstant.config.put("DEF_1", configDefence.getJSONObject("DEF_1"));
+            
+            Iterator<?> keys = ServerConstant.configObstacle.keys();
+            while (keys.hasNext()){
+                String key = (String) keys.next();
+                JSONObject house_type = (JSONObject) ServerConstant.configObstacle.get(key);
+                
+                ServerConstant.config.put(key, configObstacle.getJSONObject(key));
+            //
+            //                System.out.println("typehouse "+ key);
+            //                System.out.println("posX "+ house_type.getInt("posX"));
+            //                System.out.println("posy "+ house_type.getInt("posY"));              
+                    
+            }
 //            //ServerConstant.config.put("TOW_1", configArmyCamp.getJSONObject("TOW_1"));
             System.out.println(">>>>>>>>>b = " + config.toString());
         } catch (JSONException e) {

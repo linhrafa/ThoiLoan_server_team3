@@ -21,10 +21,13 @@ import cmd.receive.map.RequestMapInfo;
 
 import cmd.receive.map.RequestMoveConstruction;
 
+import cmd.receive.map.RequestQuickFinish;
+
 import cmd.send.demo.ResponseRequestAddConstruction;
 import cmd.send.demo.ResponseRequestFinishTimeConstruction;
 import cmd.send.demo.ResponseRequestMapInfo;
 import cmd.send.demo.ResponseRequestMoveConstruction;
+import cmd.send.demo.ResponseRequestQuickFinish;
 import cmd.send.demo.ResponseRequestServerTime;
 import cmd.send.demo.ResponseRequestUpgradeConstruction;
 import cmd.send.demo.ResponseRequestUserInfo;
@@ -91,6 +94,11 @@ MapInfoHandler extends BaseClientRequestHandler {
                     System.out.println("FINISH_TIME_CONSTRUCTION");
                     RequestFinishTimeConstruction finish_time = new RequestFinishTimeConstruction(dataCmd);
                     processFinishTimeConstruction(user,finish_time);
+                    break;
+                case CmdDefine.QUICK_FINISH:
+                    logger.info("QUICK_FINISH ");
+                    RequestQuickFinish quick_finish = new RequestQuickFinish(dataCmd);
+                    processQuickFinish(user,quick_finish);
                     break;
                 case CmdDefine.GET_SERVER_TIME:
                     //System.out.println("GET_SERVER_TIME");
@@ -318,7 +326,8 @@ MapInfoHandler extends BaseClientRequestHandler {
                     return;
                 }
             //*------------------------------------------------
-        
+            logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+        mapInfo.print();
         int exchange_resource = 0;
         exchange_resource = checkResource(userInfo,(building.type),building.level+1);
             
@@ -396,7 +405,7 @@ MapInfoHandler extends BaseClientRequestHandler {
         //Kiem tra tai nguyen co du khong
         //Neu g = 0 la du tai nguyen
         //Neu g > 0 la so G con thieu so voi cost
-        
+        System.out.println("level ="+level);
         
         int g = 0;
         int gold_bd = getGold(type,level);
@@ -533,7 +542,7 @@ MapInfoHandler extends BaseClientRequestHandler {
             }
             long time_cur = System.currentTimeMillis();
             long time_da_chay = time_cur-building.timeStart;
-            long time_can_chay = building.getTimeBuild();
+            long time_can_chay = building.getTimeBuild(building.status);
             if ((time_da_chay > time_can_chay) ){
                 if (building.status.equals("upgrade")){
                     mapInfo.listBuilding.get(finish_time.id).level ++;
@@ -563,6 +572,54 @@ MapInfoHandler extends BaseClientRequestHandler {
 
         }
 
+    }
+
+    private void processQuickFinish(User user, RequestQuickFinish quick_finish) {
+        logger.info("processQuickFinish");
+        MapInfo mapInfo;
+        try {
+            ZPUserInfo userInfo = (ZPUserInfo) ZPUserInfo.getModel(user.getId(), ZPUserInfo.class);
+            if (userInfo == null) {
+               ////send response error
+               send(new ResponseRequestQuickFinish(ServerConstant.ERROR), user);
+               return;
+            }
+            //*------------------------------------------------
+            mapInfo = (MapInfo) MapInfo.getModel(user.getId(), MapInfo.class);
+            if (mapInfo == null) {               
+               //send response error
+               send(new ResponseRequestQuickFinish(ServerConstant.ERROR), user);
+               return;
+            }
+            Building building = mapInfo.listBuilding.get(quick_finish.id);
+            if (building.type.equals("BDH_1") || building.status.equals("destroy")){
+                    send(new ResponseRequestQuickFinish(ServerConstant.ERROR), user);
+                    return;
+                }
+            //*------------------------------------------------
+        
+            mapInfo.print();                
+            int g_release = building.getGtoQuickFinish();
+            System.out.println("So G de hoan thanh nhanh la "+ g_release);
+            if (userInfo.coin < g_release ){
+                send(new ResponseRequestQuickFinish(ServerConstant.ERROR), user);
+                return;
+            }
+            else {
+                System.out.println("Building = "+ building.type+ ", level: "+ building.level+" , status: "+building.status);
+                userInfo.reduceUserResources(0,0,0,g_release, building.type, false);
+                if (building.status.equals(ServerConstant.upgrade_status)){
+                    mapInfo.listBuilding.get(quick_finish.id).level ++;
+                }
+                mapInfo.listBuilding.get(quick_finish.id).setStatus(ServerConstant.complete_status);
+                mapInfo.print();
+                
+                mapInfo.saveModel(user.getId());
+                userInfo.saveModel(user.getId());
+                
+            }
+        } catch (Exception e) {
+        }
     }
 }
 
