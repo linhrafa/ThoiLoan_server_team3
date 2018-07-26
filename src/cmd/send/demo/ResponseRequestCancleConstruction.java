@@ -13,11 +13,11 @@ import java.nio.ByteBuffer;
 
 
 
-public class ResponseRequestQuickFinish extends BaseMsg{
+public class ResponseRequestCancleConstruction extends BaseMsg{
     short validate ;
   
-    public ResponseRequestQuickFinish(short validate) {
-        super(CmdDefine.QUICK_FINISH);
+    public ResponseRequestCancleConstruction(short validate) {
+        super(CmdDefine.CANCLE_CONSTRUCTION);
         this.validate = validate;
     }
     

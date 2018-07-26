@@ -1,10 +1,13 @@
 package cmd.obj.map;
 
+import util.server.ServerConstant;
+
 public class Obs {
     public int id;
     public String type;
     public int posX;
     public int posY;
+    public String status;
     public Obs() {
         super();
     }
@@ -14,5 +17,6 @@ public class Obs {
         this.type = _type;
         this.posX = x;
         this.posY = y;
+        this.status = ServerConstant.complete_status;
     }
 }

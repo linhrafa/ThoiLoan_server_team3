@@ -31,6 +31,7 @@ import java.util.Random;
 
 import java.util.TimeZone;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import util.database.DataModel;
@@ -173,14 +174,19 @@ public class MapInfo extends DataModel{
         
         
         for (Building building : this.listBuilding) {
+            if (! building.status.equals(ServerConstant.destroy_status)){
+                mapArray.addBuilding(this,building.id,building.posX,building.posY);
+            }
             //System.out.println(">>>>>mamama:"+ building.type);
-            mapArray.addBuilding(this,building.id,building.posX,building.posY);
-            //System.out.println(building.id+" "+building.posX + " "+building.posY);
+            
+            System.out.println(building.id+" "+building.posX + " "+building.posY);
         }
         
         for (Obs obs : this.listObs) {
-            //System.out.println(">>>>>mamama:"+ building.type);
-            mapArray.addObs(this,obs.id,obs.posX,obs.posY);
+            if (! obs.status.equals(ServerConstant.destroy_status)){
+            System.out.println(">>>>>mamama:"+ obs.type);
+                mapArray.addObs(this,obs.id,obs.posX,obs.posY);
+            }
             //System.out.println(building.id+" "+building.posX + " "+building.posY);
         }
         
@@ -294,7 +300,7 @@ public class MapInfo extends DataModel{
     public void checkStatus() {
         System.out.println("***********checkbuilding **********************");
         for (Building building : this.listBuilding){
-                
+            if ( !building.status.equals(ServerConstant.destroy_status)){
                 
                 long time_cur = System.currentTimeMillis();
                 long distance = time_cur - building.timeStart;
@@ -309,6 +315,7 @@ public class MapInfo extends DataModel{
                     building.setStatus("complete");
                     
                 }
+            }
             //System.out.println(building.type+" "+"time start: "+building.timeStart+" "+"distance: "+distance+"status "+building.status);
         }
     }
@@ -323,5 +330,23 @@ public class MapInfo extends DataModel{
         for (Building building : this.listBuilding){
             System.out.println(building.type+" "+"time start: "+building.timeStart+" "+"status "+building.status+"level: "+building.level);
         }
+    }
+
+    public int getRequire(String capacity_type) {
+        for (Building building: this.listBuilding){
+            if (building.type.equals(ServerConstant.town)){
+                try {
+                    JSONObject town = ServerConstant.config.getJSONObject(ServerConstant.town).getJSONObject(Integer.toString(building.level));
+                    return(town.getInt(capacity_type));
+                    
+                } catch (JSONException e){
+                    
+                    return 0;
+                }     
+                
+            }
+        }
+        return 0;
+        
     }
 }

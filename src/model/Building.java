@@ -110,5 +110,21 @@ public class Building{
         
         return (int)(minute);
     }
+
+    public int getGtoCancle(String resource_type) {
+        
+        int level = this.level;
+        if (status.equals("upgrade")){
+            level ++;
+        }
+        try {
+            JSONObject construction = ServerConstant.config.getJSONObject(this.type).getJSONObject(Integer.toString(level));
+            return(construction.getInt(resource_type)/2);
+            
+        } catch (JSONException e){
+            
+            return 0;
+        }        
+    }
 }
 

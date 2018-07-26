@@ -55,7 +55,7 @@ public class MapArray {    //vi tri id cua cac building trong Mapinfo_listbuildi
     }
     
     public boolean check_addBuilding(MapInfo mapinfo, String type, int x, int y){
-        //System.out.println("LOG_ADDBUILDING: type+" + type + "x=+"+x+ "+y = "+y);
+        System.out.println("LOG_ADDBUILDING: type+" + type + "x=+"+x+ "+y = "+y);
         int height = getHeight(type);
         int weight = getWeight(type);
         
@@ -208,7 +208,7 @@ public class MapArray {    //vi tri id cua cac building trong Mapinfo_listbuildi
     private boolean hasId(int id, List<Building> listbuilding) {
         if (listbuilding.isEmpty()) return false;
         for(Building building:listbuilding){
-            if (building.getId()==id) return true;
+            if (building.getId()==id && !building.status.equals(ServerConstant.destroy_status)) return true;
         }
         return false;
     }

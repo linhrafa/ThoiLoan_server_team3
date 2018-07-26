@@ -13,6 +13,7 @@ import cmd.obj.map.MapArray;
 
 import cmd.receive.map.RequestUpgradeConstruction;
 import cmd.receive.map.RequestAddConstruction;
+import cmd.receive.map.RequestCancleConstruction;
 import cmd.receive.map.RequestFinishTimeConstruction;
 import cmd.receive.map.RequestGetServerTime;
 import cmd.receive.map.RequestMapInfo;
@@ -24,6 +25,7 @@ import cmd.receive.map.RequestMoveConstruction;
 import cmd.receive.map.RequestQuickFinish;
 
 import cmd.send.demo.ResponseRequestAddConstruction;
+import cmd.send.demo.ResponseRequestCancleConstruction;
 import cmd.send.demo.ResponseRequestFinishTimeConstruction;
 import cmd.send.demo.ResponseRequestMapInfo;
 import cmd.send.demo.ResponseRequestMoveConstruction;
@@ -95,6 +97,11 @@ MapInfoHandler extends BaseClientRequestHandler {
                     RequestFinishTimeConstruction finish_time = new RequestFinishTimeConstruction(dataCmd);
                     processFinishTimeConstruction(user,finish_time);
                     break;
+                case CmdDefine.CANCLE_CONSTRUCTION:
+                    logger.info("CANCLE_CONSTRUCTION");
+                    RequestCancleConstruction cancle_construction = new RequestCancleConstruction(dataCmd);
+                    processRequestCancleConstruction(user,cancle_construction);
+                    break;
                 case CmdDefine.QUICK_FINISH:
                     logger.info("QUICK_FINISH ");
                     RequestQuickFinish quick_finish = new RequestQuickFinish(dataCmd);
@@ -132,8 +139,10 @@ MapInfoHandler extends BaseClientRequestHandler {
                     mapInfo.saveModel(user.getId());
                 }
 //            System.out.println(">>>>>MAP ARRAY:");
-           
+            logger.info("in ra TRUOC KHI CHECK MAP map");
+            mapInfo.print();
             mapInfo.checkStatus();
+            logger.info("in ra SAU KHI CHECK MAP");
             mapInfo.print();
             mapInfo.saveModel(user.getId());
             send(new ResponseRequestMapInfo(mapInfo), user);
@@ -226,7 +235,7 @@ MapInfoHandler extends BaseClientRequestHandler {
                 int elixir = getElixir(add_construction.type,level);
                 int darkElixir = getDarkElixir(add_construction.type,level);
                 
-                mapInfo.print();
+                
                 
                 //Xet truong hop dac biet
                 if (add_construction.type.equals("BDH_1")){
@@ -279,7 +288,8 @@ MapInfoHandler extends BaseClientRequestHandler {
                         userInfo.reduceUserResources(gold,elixir,darkElixir,check_resource+coin+g_release, add_construction.type, true);
                         userInfo.saveModel(user.getId());
                         mapInfo.saveModel(user.getId());
-                        
+//                        logger.info("in ra khi add construction");
+//                        mapInfo.print();
                         send(new ResponseRequestAddConstruction(ServerConstant.SUCCESS), user);
                     }
                 } 
@@ -288,7 +298,8 @@ MapInfoHandler extends BaseClientRequestHandler {
                     mapInfo.addBuilding(add_construction.type, add_construction.posX, add_construction.posY,level, "pending");
                     userInfo.saveModel(user.getId());
                     mapInfo.saveModel(user.getId());
-                    
+//                    logger.info("in ra khi add construction");
+//                    mapInfo.print();
                     send(new ResponseRequestAddConstruction(ServerConstant.SUCCESS), user);
                 }
             }
@@ -321,13 +332,13 @@ MapInfoHandler extends BaseClientRequestHandler {
                return;
             }
             Building building = mapInfo.listBuilding.get(upgrade_construction.id);
-            if (building.type.equals("BDH_1") || building.status.equals("destroy")){
+            if (building.type.equals("BDH_1") || building.status.equals(ServerConstant.destroy_status)){
                     send(new ResponseRequestUpgradeConstruction(ServerConstant.ERROR), user);
                     return;
                 }
             //*------------------------------------------------
-            logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-        mapInfo.print();
+//            logger.info(">>>>>>>>>>>>>in ra truoc khi upgrade>>>>>>>");
+//            mapInfo.print();
         int exchange_resource = 0;
         exchange_resource = checkResource(userInfo,(building.type),building.level+1);
             
@@ -372,7 +383,9 @@ MapInfoHandler extends BaseClientRequestHandler {
                         
                         userInfo.saveModel(user.getId());
                         mapInfo.saveModel(user.getId());
-                        
+                        logger.info(">>>>>>>>>>>>>in ra sau khi upgrade>>>>>>>");
+                        mapInfo.print()
+                            ;
                         send(new ResponseRequestUpgradeConstruction(ServerConstant.SUCCESS), user);
                     }
                 } 
@@ -382,7 +395,8 @@ MapInfoHandler extends BaseClientRequestHandler {
                     
                     userInfo.saveModel(user.getId());
                     mapInfo.saveModel(user.getId());
-                    
+                    logger.info(">>>>>>>>>>>>>in ra sau khi upgrade>>>>>>>");
+                    mapInfo.print();
                     send(new ResponseRequestUpgradeConstruction(ServerConstant.SUCCESS), user);
                 }
             
@@ -532,7 +546,7 @@ MapInfoHandler extends BaseClientRequestHandler {
                 //send response error
             }  
             Building building = mapInfo.listBuilding.get(finish_time.id);
-            if (building.status.equals("destroy")){
+            if (building.status.equals(ServerConstant.destroy_status)){
                 System.out.println("Nha nay da huy");
                 return;
             }
@@ -592,13 +606,14 @@ MapInfoHandler extends BaseClientRequestHandler {
                return;
             }
             Building building = mapInfo.listBuilding.get(quick_finish.id);
-            if (building.type.equals("BDH_1") || building.status.equals("destroy")){
+            if (building.type.equals("BDH_1") || building.status.equals(ServerConstant.destroy_status)){
                     send(new ResponseRequestQuickFinish(ServerConstant.ERROR), user);
                     return;
                 }
             //*------------------------------------------------
-        
-            mapInfo.print();                
+//            logger.info(">>>>>>>>>>>>>in ra truoc khi quick finish>>>>>>>");
+//            
+//            mapInfo.print();                
             int g_release = building.getGtoQuickFinish();
             System.out.println("So G de hoan thanh nhanh la "+ g_release);
             if (userInfo.coin < g_release ){
@@ -616,9 +631,66 @@ MapInfoHandler extends BaseClientRequestHandler {
                 
                 mapInfo.saveModel(user.getId());
                 userInfo.saveModel(user.getId());
-                
+                send(new ResponseRequestQuickFinish(ServerConstant.SUCCESS), user);
             }
         } catch (Exception e) {
+        }
+    }
+
+    private void processRequestCancleConstruction(User user, RequestCancleConstruction cancle_construction) {
+        logger.info("processRequestCancleConstruction");
+        MapInfo mapInfo;
+        try {
+            ZPUserInfo userInfo = (ZPUserInfo) ZPUserInfo.getModel(user.getId(), ZPUserInfo.class);
+            if (userInfo == null) {
+               ////send response error
+                logger.debug("khong ton tai user");
+               send(new ResponseRequestCancleConstruction(ServerConstant.ERROR), user);
+               return;
+            }
+            //*------------------------------------------------
+            mapInfo = (MapInfo) MapInfo.getModel(user.getId(), MapInfo.class);
+            if (mapInfo == null) {               
+               //send response error
+               logger.debug("khong ton tai map");
+               send(new ResponseRequestCancleConstruction(ServerConstant.ERROR), user);
+               return;
+            }
+            
+            Building building = mapInfo.listBuilding.get(cancle_construction.id);
+            logger.debug(building.type+"lalalaal" + building.status+ building.id);
+            logger.debug("id duoc truyen len la: "+ cancle_construction.id);
+            if (building.type.equals("BDH_1") || building.status.equals(ServerConstant.destroy_status)){
+                    logger.debug("nha BDH hoac la nha da huy");
+                    send(new ResponseRequestCancleConstruction(ServerConstant.ERROR), user);
+                    return;
+                }
+            int gold = building.getGtoCancle(ServerConstant.gold_resource);
+            int elixir = building.getGtoCancle(ServerConstant.elixir_resource);
+            int darkElixir = building.getGtoCancle(ServerConstant.darkElixir_resource);
+            int coin = building.getGtoCancle(ServerConstant.coin_resource);
+            
+            int gold_rq = mapInfo.getRequire(ServerConstant.gold_capacity);    
+            int elx_rq = mapInfo.getRequire(ServerConstant.elixir_capacity);
+            int dElx_rq = mapInfo.getRequire(ServerConstant.darkElixir_capacity);
+            
+            
+            userInfo.addResource(gold,elixir,darkElixir,coin,gold_rq,elx_rq,dElx_rq);
+            
+            if (building.status.equals(ServerConstant.upgrade_status)){
+                mapInfo.listBuilding.get(cancle_construction.id).setStatus(ServerConstant.complete_status);    
+            }
+            else if ((building.status.equals(ServerConstant.pending_status))){
+                mapInfo.listBuilding.get(cancle_construction.id).setStatus(ServerConstant.destroy_status);    
+            }
+            
+            
+            mapInfo.saveModel(user.getId());
+            userInfo.saveModel(user.getId());
+            send(new ResponseRequestCancleConstruction(ServerConstant.SUCCESS), user);
+            
+        } catch (Exception e) {
+            
         }
     }
 }

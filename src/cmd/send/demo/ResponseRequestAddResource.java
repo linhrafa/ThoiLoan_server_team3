@@ -16,7 +16,8 @@ public class ResponseRequestAddResource extends BaseMsg {
 
     @Override
     public byte[] createData() {
-        ByteBuffer bf = makeBuffer();        
+        ByteBuffer bf = makeBuffer();  
+        bf.putShort(this.validate);
         return packBuffer(bf);
     }
 }

@@ -95,6 +95,7 @@ public class UserHandler extends BaseClientRequestHandler {
 
     }
     private void getAddResource(User user, RequestAddResource reqAddResource) {
+        logger.info("getAddResource");
         try {
             System.out.println("getID:" + user.getId() );
             ZPUserInfo userInfo = (ZPUserInfo) ZPUserInfo.getModel(user.getId(), ZPUserInfo.class);
@@ -105,6 +106,8 @@ public class UserHandler extends BaseClientRequestHandler {
             userInfo.elixir += reqAddResource.elixir;
             userInfo.darkElixir += reqAddResource.darkElixir;
             userInfo.coin += reqAddResource.coin;
+            logger.debug(userInfo.gold +" "+ userInfo.elixir +" "+ userInfo.darkElixir+" "+ userInfo.coin);
+            userInfo.saveModel(user.getId());
             
             send(new ResponseRequestAddResource(ServerConstant.SUCCESS), user);
         } catch (Exception e) {

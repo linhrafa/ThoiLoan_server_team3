@@ -147,6 +147,20 @@ public class ZPUserInfo extends DataModel {
         
     }
 
-    
-    
+
+    public void addResource(int _gold, int _elixir, int _darkElixir, int _coin, int gold_rq, int elx_rq, int dElx_rq) {
+        this.gold = this.gold + _gold;
+        if (this.gold>gold_rq) {
+            this.gold = gold_rq;
+        }
+        this.elixir = this.elixir + _elixir;
+        if (this.elixir>elx_rq) {
+            this.elixir = elx_rq;
+        }
+        this.darkElixir = this.darkElixir + _darkElixir;
+        if (this.darkElixir>dElx_rq){
+            this.darkElixir = dElx_rq;
+        }
+        this.coin = this.coin + _coin;
+    }
 }
