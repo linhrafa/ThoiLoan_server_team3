@@ -10,7 +10,10 @@ import java.nio.ByteBuffer;
 //import service.DemoHandler.DemoDirection;
 
 public class RequestAddResource extends BaseCmd {
-    public int gold, elixir, darkElixir,coin;
+    public int gold;
+    public int elixir;
+    public int darkElixir;
+    public int coin;
     public RequestAddResource(DataCmd dataCmd) {
         super(dataCmd);
         unpackData();
@@ -18,10 +21,11 @@ public class RequestAddResource extends BaseCmd {
     public void unpackData(){
         ByteBuffer bf = makeBuffer();
         try {
-            gold = readInt(bf);
-            elixir = readInt(bf);
-            darkElixir = readInt(bf);
-            coin = readInt(bf);
+            this.gold = readInt(bf);
+            this.elixir = readInt(bf);
+            this.darkElixir = readInt(bf);
+            this.coin = readInt(bf);
+            System.out.println("this.gold"+this.gold+"this.elixir"+this.elixir+"this.coin"+this.coin);
         }catch (Exception e) {
             CommonHandle.writeErrLog(e);
         }

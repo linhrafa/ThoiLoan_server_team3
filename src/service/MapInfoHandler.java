@@ -11,6 +11,8 @@ import cmd.CmdDefine;
 
 import cmd.obj.map.MapArray;
 
+import cmd.obj.map.Obs;
+
 import cmd.receive.map.RequestUpgradeConstruction;
 import cmd.receive.map.RequestAddConstruction;
 import cmd.receive.map.RequestCancleConstruction;
@@ -24,12 +26,15 @@ import cmd.receive.map.RequestMoveConstruction;
 
 import cmd.receive.map.RequestQuickFinish;
 
+import cmd.receive.map.RequestRemoveObs;
+
 import cmd.send.demo.ResponseRequestAddConstruction;
 import cmd.send.demo.ResponseRequestCancleConstruction;
 import cmd.send.demo.ResponseRequestFinishTimeConstruction;
 import cmd.send.demo.ResponseRequestMapInfo;
 import cmd.send.demo.ResponseRequestMoveConstruction;
 import cmd.send.demo.ResponseRequestQuickFinish;
+import cmd.send.demo.ResponseRequestRemoveObs;
 import cmd.send.demo.ResponseRequestServerTime;
 import cmd.send.demo.ResponseRequestUpgradeConstruction;
 import cmd.send.demo.ResponseRequestUserInfo;
@@ -102,6 +107,12 @@ MapInfoHandler extends BaseClientRequestHandler {
                     RequestCancleConstruction cancle_construction = new RequestCancleConstruction(dataCmd);
                     processRequestCancleConstruction(user,cancle_construction);
                     break;
+//                case CmdDefine.REMOVE_OBS:
+//                    logger.info("REMOVE_OBS");
+//                    RequestRemoveObs remove_obs = new RequestRemoveObs(dataCmd);
+//                    processRequestRemoveObs(user,remove_obs);
+//                    break;
+                
                 case CmdDefine.QUICK_FINISH:
                     logger.info("QUICK_FINISH ");
                     RequestQuickFinish quick_finish = new RequestQuickFinish(dataCmd);
@@ -674,7 +685,6 @@ MapInfoHandler extends BaseClientRequestHandler {
             int elx_rq = mapInfo.getRequire(ServerConstant.elixir_capacity);
             int dElx_rq = mapInfo.getRequire(ServerConstant.darkElixir_capacity);
             
-            
             userInfo.addResource(gold,elixir,darkElixir,coin,gold_rq,elx_rq,dElx_rq);
             
             if (building.status.equals(ServerConstant.upgrade_status)){
@@ -684,6 +694,65 @@ MapInfoHandler extends BaseClientRequestHandler {
                 mapInfo.listBuilding.get(cancle_construction.id).setStatus(ServerConstant.destroy_status);    
             }
             
+            
+            mapInfo.saveModel(user.getId());
+            userInfo.saveModel(user.getId());
+            send(new ResponseRequestCancleConstruction(ServerConstant.SUCCESS), user);
+            
+        } catch (Exception e) {
+            
+        }
+    }
+
+    private void processRequestRemoveObs(User user, RequestRemoveObs remove_obs) {
+        logger.info("processRequestRemoveObs");
+        MapInfo mapInfo;
+        try {
+            ZPUserInfo userInfo = (ZPUserInfo) ZPUserInfo.getModel(user.getId(), ZPUserInfo.class);
+            if (userInfo == null) {
+               ////send response error
+                logger.debug("khong ton tai user");
+               send(new ResponseRequestRemoveObs(ServerConstant.ERROR), user);
+               return;
+            }
+            //*------------------------------------------------
+            mapInfo = (MapInfo) MapInfo.getModel(user.getId(), MapInfo.class);
+            if (mapInfo == null) {               
+               //send response error
+               logger.debug("khong ton tai map");
+               send(new ResponseRequestRemoveObs(ServerConstant.ERROR), user);
+               return;
+            }
+            
+            Obs obs = mapInfo.listObs.get(remove_obs.id);
+            logger.debug(obs.type+" " + obs.status+ obs.id);
+            logger.debug("id obs duoc truyen len la: "+ remove_obs.id);
+            if (obs.status.equals(ServerConstant.destroy_status)){                    
+                    send(new ResponseRequestRemoveObs(ServerConstant.ERROR), user);
+                    return;
+                }
+            
+            int exchange_resource = 0;
+            exchange_resource = checkResource(userInfo,(obs.type),1);
+            int coin = getCoin(obs.type,obs.level);
+            if ((exchange_resource+coin>userInfo.coin)){ 
+                send(new ResponseRequestRemoveObs(ServerConstant.ERROR), user);
+                return;
+            }
+            
+            
+            int gold = obs.getGtoRemove(ServerConstant.gold_resource);
+            int elixir = obs.getGtoRemove(ServerConstant.elixir_resource);
+            int darkElixir = obs.getGtoRemove(ServerConstant.darkElixir_resource);
+//            int coin = obs.getGtoRemove(ServerConstant.coin_resource);
+            
+            int gold_rq = mapInfo.getRequire(ServerConstant.gold_capacity);    
+            int elx_rq = mapInfo.getRequire(ServerConstant.elixir_capacity);
+            int dElx_rq = mapInfo.getRequire(ServerConstant.darkElixir_capacity);
+            
+            
+            userInfo.addResource(gold,elixir,darkElixir,coin,gold_rq,elx_rq,dElx_rq);
+                      
             
             mapInfo.saveModel(user.getId());
             userInfo.saveModel(user.getId());

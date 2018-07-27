@@ -53,6 +53,7 @@ public class UserHandler extends BaseClientRequestHandler {
         try {
             switch (dataCmd.getId()) {
             case CmdDefine.GET_USER_INFO:
+                System.out.println("<<<<<<"+dataCmd);
                 RequestUserInfo reqInfo = new RequestUserInfo(dataCmd);            
 //                System.out.println("username : "+reqInfo.username);
 //                System.out.println("pass : "+reqInfo.password);
@@ -61,7 +62,9 @@ public class UserHandler extends BaseClientRequestHandler {
                 break;
             
             case CmdDefine.ADD_RESOURCE:
-                RequestAddResource reqAddResource = new RequestAddResource(dataCmd);            
+                System.out.println("<<<<<<"+dataCmd);
+                RequestAddResource reqAddResource = new RequestAddResource(dataCmd); 
+                System.out.println("<<<<<<"+dataCmd);
 //                System.out.println("username : "+reqInfo.username);
 //                System.out.println("pass : "+reqInfo.password);
 //                getUserInfo(user,reqInfo.username,reqInfo.password);
