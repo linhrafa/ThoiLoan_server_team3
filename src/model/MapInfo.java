@@ -184,7 +184,7 @@ public class MapInfo extends DataModel{
         
         for (Obs obs : this.listObs) {
             if (! obs.status.equals(ServerConstant.destroy_status)){
-            System.out.println(">>>>>mamama:"+ obs.type);
+            //System.out.println(">>>>>mamama:"+ obs.type);
                 mapArray.addObs(this,obs.id,obs.posX,obs.posY);
             }
             //System.out.println(building.id+" "+building.posX + " "+building.posY);

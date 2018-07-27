@@ -21,8 +21,7 @@ public class ResponseRequestMoveConstruction extends BaseMsg {
 
     @Override
     public byte[] createData() {
-        ByteBuffer bf = makeBuffer();
-        
+        ByteBuffer bf = makeBuffer();        
         bf.putShort(validate);
         System.out.println("success or not "+ this.validate);
         return packBuffer(bf);

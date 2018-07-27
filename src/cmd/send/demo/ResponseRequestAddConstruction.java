@@ -23,7 +23,9 @@ public class ResponseRequestAddConstruction extends BaseMsg {
     public byte[] createData() {
         ByteBuffer bf = makeBuffer();
         System.out.println("validate XAY= " + this.validate );
+        
         bf.putShort(this.validate);
+        
         return packBuffer(bf);
     }
 }
