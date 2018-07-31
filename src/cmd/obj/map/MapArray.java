@@ -122,19 +122,19 @@ public class MapArray {    //vi tri id cua cac building trong Mapinfo_listbuildi
 
     private boolean checkPos(int x, int y, int height, int weight) {
         if (x<0 || y<0 ) {
-            System.out.println("x,y= "+ x+","+y);
+            System.out.println("vi tri nhap vao sai, x,y= "+ x+","+y);
             return false;
             
         };
         if (x+weight >ServerConstant.WEIGHT_MAP || y+height>ServerConstant.HEIGHT_MAP){
-            System.out.println("x+weight,y+height= "+ x+","+y+height);
+            System.out.println("vi tri nhap vao sai , x+weight,y+height= "+ x+","+y+height);
             return false;
         }
         //System.out.println("*****check new pos***** = "+ x +" +"+y+" "+height+" "+weight);
         for(int i=x;i<x+height;i++){
             for(int j=y;j<y+weight;j++){
                 if (this.arr[i][j]!= -1 ){ //neu da co nha noi ay
-                    System.out.println("*****SAI ROI");
+                    System.out.println("*****SAI ROI, da co nha hoac cay co id la"+ this.arr[i][j]);
                     return false;
                 }
             }
@@ -177,6 +177,7 @@ public class MapArray {    //vi tri id cua cac building trong Mapinfo_listbuildi
         System.out.println("move Building2"+ id +" "+x+" "+y);
         if (!checkPos(x,y,height,weight)){ //
             System.out.println("SAI VI TRI DA CO NHA O");
+            
             return false;
         }
         System.out.println("move Building3"+ id +" "+x+" "+y);

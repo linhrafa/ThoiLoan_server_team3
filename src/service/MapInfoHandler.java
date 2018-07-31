@@ -65,6 +65,7 @@ MapInfoHandler extends BaseClientRequestHandler {
     public static short add_house_id = 1;
     public static short upgrade_house_id = 2;
     private final Logger logger = LoggerFactory.getLogger("MapInfoHandler");
+    private final Logger logger_move = LoggerFactory.getLogger("Move_construction");
     
     public MapInfoHandler() {
         super();
@@ -171,12 +172,15 @@ MapInfoHandler extends BaseClientRequestHandler {
 
 
     private void processMoveConstruction(User user, RequestMoveConstruction move_construction) {
+        
         try {
             System.out.println("processMoveConstruction" + user.getId() );
             MapInfo mapInfo = (MapInfo) MapInfo.getModel(user.getId(), MapInfo.class);
             if (mapInfo == null) {
                 //send response error
-            }       
+            }
+            logger_move.debug("Map Info truoc khi move");
+            mapInfo.print();
             MapArray mapArray = new MapArray();
             mapArray = mapInfo.getMapArray();
             //System.out.println("VI TRI CU="+mapInfo.listBuilding.get(move_construction.id).posX+" "+mapInfo.listBuilding.get(move_construction.id).posY);
@@ -616,17 +620,25 @@ MapInfoHandler extends BaseClientRequestHandler {
                send(new ResponseRequestQuickFinish(ServerConstant.ERROR), user);
                return;
             }
+            
+            logger.info("quick_finish.id: "+ quick_finish.id);
+            
             Building building = mapInfo.listBuilding.get(quick_finish.id);
+            
+            logger.info("quick_finish.type : "+ building.type);
+            logger.info("quick_finish.id: "+ quick_finish.id);
             if (building.type.equals("BDH_1") || building.status.equals(ServerConstant.destroy_status)){
                     send(new ResponseRequestQuickFinish(ServerConstant.ERROR), user);
                     return;
                 }
             //*------------------------------------------------
-//            logger.info(">>>>>>>>>>>>>in ra truoc khi quick finish>>>>>>>");
+            logger.info(">>>>>>>>>>>>>in ra truoc khi quick finish>>>>>>>");
 //            
-//            mapInfo.print();                
+            mapInfo.print();                
             int g_release = building.getGtoQuickFinish();
             System.out.println("So G de hoan thanh nhanh la "+ g_release);
+            mapInfo.print();
+            
             if (userInfo.coin < g_release ){
                 send(new ResponseRequestQuickFinish(ServerConstant.ERROR), user);
                 return;

@@ -429,16 +429,37 @@ public class ServerConstant {
         
         try {
             ServerConstant.config.put("AMC_1", configArmyCamp.getJSONObject("AMC_1"));
+            
             ServerConstant.config.put("BAR_1", configBarrack.getJSONObject("BAR_1"));
+            ServerConstant.config.put("BAR_2", configBarrack.getJSONObject("BAR_2"));
+            
             ServerConstant.config.put("BDH_1", configBuilderHut.getJSONObject("BDH_1"));
+            
             ServerConstant.config.put("LAB_1", configLaboratory.getJSONObject("LAB_1"));
+            
             ServerConstant.config.put("RES_1", configResource.getJSONObject("RES_1"));
             ServerConstant.config.put("RES_2", configResource.getJSONObject("RES_2"));
+            ServerConstant.config.put("RES_3", configResource.getJSONObject("RES_3"));
+            
             ServerConstant.config.put("STO_1", configStorage.getJSONObject("STO_1"));
             ServerConstant.config.put("STO_2", configStorage.getJSONObject("STO_2"));
             ServerConstant.config.put("STO_3", configStorage.getJSONObject("STO_3"));
+            
             ServerConstant.config.put("TOW_1", configTownHall.getJSONObject("TOW_1"));
+            
             ServerConstant.config.put("DEF_1", configDefence.getJSONObject("DEF_1"));
+            ServerConstant.config.put("DEF_2", configDefence.getJSONObject("DEF_2"));
+            ServerConstant.config.put("DEF_3", configDefence.getJSONObject("DEF_3"));
+            ServerConstant.config.put("DEF_4", configDefence.getJSONObject("DEF_4"));
+            ServerConstant.config.put("DEF_5", configDefence.getJSONObject("DEF_5"));
+            ServerConstant.config.put("DEF_6", configDefence.getJSONObject("DEF_6"));
+            ServerConstant.config.put("DEF_7", configDefence.getJSONObject("DEF_7"));
+            ServerConstant.config.put("DEF_8", configDefence.getJSONObject("DEF_8"));
+            ServerConstant.config.put("DEF_9", configDefence.getJSONObject("DEF_9"));
+            ServerConstant.config.put("DEF_10", configDefence.getJSONObject("DEF_10"));
+            ServerConstant.config.put("DEF_11", configDefence.getJSONObject("DEF_11"));
+            ServerConstant.config.put("DEF_12", configDefence.getJSONObject("DEF_12"));
+            ServerConstant.config.put("DEF_13", configDefence.getJSONObject("DEF_13"));
             
             Iterator<?> keys = ServerConstant.configObstacle.keys();
             while (keys.hasNext()){

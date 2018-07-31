@@ -26,6 +26,7 @@ public class ResponseRequestQuickFinish extends BaseMsg{
         ByteBuffer bf = makeBuffer();
         
         bf.putShort(this.validate);
+        System.out.println("ResponseRequestQuickFinish"+ this.validate);
         return packBuffer(bf);
     }
 }
