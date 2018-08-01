@@ -1,2 +1,0 @@
-17 Jul 2018 14:36:28,820 ERROR [bitzero.server.controllers.ExtensionController-2] debug     - org.json.JSONException A JSONObject text must begin with '{' at 1 [character 2 line 1]
-17 Jul 2018 14:39:03,312 ERROR [bitzero.server.controllers.ExtensionController-2] debug     - org.json.JSONException A JSONObject text must begin with '{' at 1 [character 2 line 1]

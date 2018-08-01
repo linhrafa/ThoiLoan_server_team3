@@ -1,8 +1,0 @@
-16 Jul 2018 17:57:54,871 ERROR [bitzero.server.controllers.ExtensionController-4] debug     - java.io.FileNotFoundException E:\workspace\Fresher_demo\conf\Config_jsonArmyCamp.json (The system cannot find the file specified)
-16 Jul 2018 17:57:54,874 ERROR [bitzero.server.controllers.ExtensionController-4] debug     - org.json.JSONException A JSONObject text must begin with '{' at 1 [character 2 line 1]
-16 Jul 2018 18:03:30,754 ERROR [bitzero.server.controllers.ExtensionController-8] debug     - java.io.FileNotFoundException E:\workspace\Fresher_demo\conf\Config_jsonArmyCamp.json (The system cannot find the file specified)
-16 Jul 2018 18:03:30,755 ERROR [bitzero.server.controllers.ExtensionController-8] debug     - org.json.JSONException A JSONObject text must begin with '{' at 1 [character 2 line 1]
-16 Jul 2018 18:04:27,173 ERROR [bitzero.server.controllers.ExtensionController-2] debug     - java.io.FileNotFoundException E:\workspace\Fresher_demo\conf\Config_jsonArmyCamp.json (The system cannot find the file specified)
-16 Jul 2018 18:04:27,174 ERROR [bitzero.server.controllers.ExtensionController-2] debug     - org.json.JSONException A JSONObject text must begin with '{' at 1 [character 2 line 1]
-16 Jul 2018 18:32:59,991 ERROR [bitzero.server.controllers.ExtensionController-10] debug     - java.io.FileNotFoundException E:\workspace\Fresher_demo\conf\Config_jsonArmyCamp.json (The system cannot find the file specified)
-16 Jul 2018 18:32:59,991 ERROR [bitzero.server.controllers.ExtensionController-10] debug     - org.json.JSONException A JSONObject text must begin with '{' at 1 [character 2 line 1]
