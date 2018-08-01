@@ -44,7 +44,7 @@ public class ZPUserInfo extends DataModel {
     public int coin = 1000;
     public int elixir = 0;
     public int darkElixir = 0; 
-    public int builderNumber ;
+    public int builderNumber;
 
 
     

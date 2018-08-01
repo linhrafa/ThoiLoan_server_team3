@@ -24,11 +24,14 @@ import eventhandler.LogoutHandler;
 
 import java.util.List;
 
+import model.TroopInfo;
+
 import org.apache.commons.lang.exception.ExceptionUtils;
 
 import org.json.JSONObject;
 
 import service.MapInfoHandler;
+import service.TroopHandle;
 import service.UserHandler;
 
 import util.GuestLogin;
@@ -57,6 +60,7 @@ public class FresherExtension extends BZExtension {
         addRequestHandler(UserHandler.USER_MULTI_IDS, UserHandler.class);
         //addRequestHandler(DemoHandler.DEMO_MULTI_IDS, DemoHandler.class);
         addRequestHandler(MapInfoHandler.MAPINFO_MULTI_IDS, MapInfoHandler.class);
+        addRequestHandler(TroopHandle.TROOP_MULTI_IDS, TroopHandle.class);
 
         trace(" Event Handler ");
         addEventHandler(BZEventType.USER_LOGIN, LoginSuccessHandler.class);
@@ -109,6 +113,8 @@ public class FresherExtension extends BZExtension {
 
 
     public void doLogin(short cmdId, ISession session, DataCmd objData) {
+        
+        
         RequestLogin reqGet = new RequestLogin(objData);
         System.out.println("cmdId "+ cmdId);
         reqGet.unpackData();

@@ -53,5 +53,7 @@ public class CmdDefine {
     public static final short FRIEND_GET_INVITATIONS = 3018;
     public static final short FRIEND_RESPONSE_INVITATION = 3019;
     public static final short FRIEND_SET_STAR = 3020;
-
+    
+    public static final short GET_TROOP_INFO = 4001;
+    public static final short RESEARCH_TROOP = 4002;
 }

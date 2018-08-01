@@ -26,9 +26,7 @@ public class RequestAddConstruction extends BaseCmd{
         ByteBuffer bf = makeBuffer();
         try {
             this.type = readString(bf);
-            //System.out.println("LOG_ADDBUILDING: type+" + this.type );
-            this.posX = readInt(bf);
-            this.posY = readInt(bf);            
+            System.out.println("REQUEST FROM CLIENT: research type: " + this.type );         
         }catch (Exception e) {
             CommonHandle.writeErrLog(e);}
     }
